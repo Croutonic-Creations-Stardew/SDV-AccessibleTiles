@@ -35,5 +35,8 @@ Any given category will only be selectable if there are objects that fit into th
 - Resources 
 - FarmBuildings
 
+# Get The Mod
+The latest version of the mod can always be found at [GrumpyCrouton.com](https://stardew.grumpycrouton.com)
+
 ## JAWS Support			
 If you plan to use JAWS while playing with grid movement keys assigned to the arrow keys, you will need to apply the JAWS Passthrough Settings file found [here](https://stardew.grumpycrouton.com/releases/StardewModdingAPI.jkm)
