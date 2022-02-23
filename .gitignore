@@ -1,0 +1,7 @@
+/.vs
+/.git
+/bin
+/obj
+.editorconfig
+.gitattributes
+manifest.json
