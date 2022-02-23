@@ -1,32 +1,39 @@
 # SDV-AccessibleTiles
  
-Snaps the players character to the tile grid when using WASD to move. Hold down the arrow keys to move multiple tiles.
+Accessibility mod which seeks to make movement and tracking easier.
 
-Press HOME to center yourself in the tile you are currently standing in.
-Press I to toggle between regular movement and grid movement
+# Default Controls
+## General
+- Press HOME to center yourself in the tile you are currently standing in
+- Press I to toggle between regular movement and grid movement.
+- WASD to walk between tiles (If grid movement is active)
+	- Also supports the controller d-pad
+- Screen reader will read out which movement mode the player is in when they toggle it (With [Stardew Access](https://stardew-access.github.io) installed)
 
-Tracking Utility
+## Tracking Utility
+> Note: Not easily accessible unless [Stardew Access](https://stardew-access.github.io) is installed.
 
-CONTROLLER SUPPORT:
-Use the controllers d-pad for grid movement.
+- CTRL + PageUp/PageDown - Cycle through object categories ([List Of Categories](#list-of-categories))
+- PageUp/PageDown - Cycle through objects in current object category
+- HOME - Read the direction, distance and tile location of the nearest focused object
+- END - Read the tile location of the nearest focused object
 
-- If [Stardew Access](https://www.nexusmods.com/stardewvalley/mods/10319) is running
-	- The screen reader will alert the player which movement mode they are in when they toggle it
-	- Tracking Utility
-		- PageUp or PageDown to cycle through different objects in your current location
-		- HOME key to read the nearest focused objects direction, distance, and tile location
-		- END key to read the nearest focused objects tile location only
-		- Hold CTRL + PageUp or PageDown to cycle through different categories of objects, such as
-			- Mining 
-			- Objects 
-			- Crops 
-			- Animals 
-			- Entrances 
-			- Characters 
-			- Resource Clumps 
-			- Bundles 
-			- POI
-			- Resources 
-			- FarmBuildings
+### Tracking Utility Categories
 
-NOTE: If you plan to use JAWS while playing with grid movement keys assigned to the arrow keys, you will need to apply the JAWS Passthrough Settings file found in the Optional Files area of [Nexus](https://www.nexusmods.com/stardewvalley/mods/10755).
+Any given category will only be selectable if there are objects that fit into that category present in your current map location.
+
+#### List Of Categories
+- Mining 
+- Objects 
+- Crops 
+- Animals 
+- Entrances 
+- Characters 
+- Resource Clumps 
+- Bundles 
+- POI
+- Resources 
+- FarmBuildings
+
+## JAWS Support			
+If you plan to use JAWS while playing with grid movement keys assigned to the arrow keys, you will need to apply the JAWS Passthrough Settings file found [here](https://stardew.grumpycrouton.com/releases/StardewModdingAPI.jkm)
