@@ -186,8 +186,8 @@ namespace AccessibleTiles.TrackingMode {
                         if (dirt.state.Value != HoeDirt.watered) {
                             names.Add("Unwatered " + cropName);
                         }
-                        if (dirt.state.Value == HoeDirt.dry) {
-                            names.Add("Withered " + cropName);
+                        if (dirt.crop.dead) {
+                            names.Add("Dead " + cropName);
                         }
                     } else {
                         if (dirt.fertilizer.Value == HoeDirt.noFertilizer) {
