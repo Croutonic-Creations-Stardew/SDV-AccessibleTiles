@@ -24,7 +24,7 @@ namespace AccessibleTiles {
         private IModHelper helper;
         private Boolean is_warping = false;
 
-        private Tracker trackingMode;
+        public Tracker trackingMode;
 
         private SButton? last_button = null;
 
@@ -220,7 +220,7 @@ namespace AccessibleTiles {
 
                     StardewValley.Object obj = Game1.currentLocation.getObjectAtTile(X, Y);
                     String object_name = obj.DisplayName;
-
+                    
                     if(object_name.ToLower().Contains("bed")) {
                         if (hasCheckedBed == false) {
                             Vector2 bed_position = obj.TileLocation;
@@ -283,12 +283,18 @@ namespace AccessibleTiles {
 
             //check tile indexes?
             int back_index = location.getTileIndexAt(X, Y, "Back");
-            if(back_index == 1229 || back_index == 362) {
-                force_pass = true;
-            }
+            string passable = location.doesTileHaveProperty(X, Y, "Passable", "Back");
+            //console.Debug();
 
+            if(back_index == 107 || back_index == 362 || back_index == 1274 || back_index == 1244) {
+                force_pass = true;
+                Game1.playSound("woodyStep");
+                        }
+            
             bool answer = !(!location.isTileOccupiedIgnoreFloors(tile_vector) &&
                 location.isTilePassable(new Location(X, Y), Game1.viewport) &&
+                !location.isWaterTile(X, Y) &&
+                !location.isOpenWater(X, Y) && 
                 !location.isTileOccupiedForPlacement(tile_vector) &&
                 pass_feature_check ||
                 location.isCropAtTile(X, Y) ||

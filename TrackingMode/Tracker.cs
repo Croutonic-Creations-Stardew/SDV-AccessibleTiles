@@ -17,7 +17,7 @@ namespace AccessibleTiles.TrackingMode {
         String? focus_name;
         String? focus_type;
 
-        SortedList<string, SortedList<string, SpecialObject>> focusable = new();
+        public SortedList<string, SortedList<string, SpecialObject>> focusable = new();
 
         private SButton read;
         private SButton cycleup;
@@ -47,6 +47,7 @@ namespace AccessibleTiles.TrackingMode {
 
             focusable.Clear();
 
+            TrackCategory("FarmBuildings", TrackerUtility.GetBuildings());
             TrackCategory("Objects", TrackerUtility.GetObjects(mod));
             TrackCategory("Resource Clumps", TrackerUtility.GetResourceClumps(mod));
             TrackCategory("Animals", TrackerUtility.GetAnimals(mod));
@@ -56,7 +57,6 @@ namespace AccessibleTiles.TrackingMode {
             TrackCategory("Bundles", TrackerUtility.GetBundles());
             TrackCategory("Characters", TrackerUtility.GetCharacters());
             TrackCategory("Entrances", TrackerUtility.GetEntrances(mod));
-            TrackCategory("FarmBuildings", TrackerUtility.GetBuildings());
             TrackCategory("P O I", TrackerUtility.GetPOIs());
 
             if (focus_name == null || focus_type == null || (bool)clear_focus) {
@@ -243,7 +243,7 @@ namespace AccessibleTiles.TrackingMode {
                         });
                         mod.stardewAccess.Say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);                        
                     } else {
-                        mod.stardewAccess.Say($"Could not find open space around {focus_name} at {tileXY.X}-{tileXY.Y}.", true);
+                        mod.stardewAccess.Say($"Could not find path to {focus_name} at {tileXY.X}-{tileXY.Y}.", true);
                     }
                 } else {
                     if (tileOnly) {
