@@ -277,13 +277,13 @@ namespace AccessibleTiles.TrackingMode {
 
                 Vector2 tile = new(currentX, currentY);
 
-                mod.console.Debug($"{i}) {tile}");
+                //mod.console.Debug($"{i}) {tile}");
                 if (currentX == tileXY.X && currentY == tileXY.Y) {
                     currentX++;
                     continue;
                 }
 
-                mod.console.Debug($"Check Tile: {tile}");
+                //mod.console.Debug($"Check Tile: {tile}");
 
                 if (!mod.IsColliding(tile)) {
 

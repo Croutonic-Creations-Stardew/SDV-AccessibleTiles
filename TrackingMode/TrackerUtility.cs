@@ -442,14 +442,60 @@ namespace AccessibleTiles.TrackingMode {
             GameLocation location = Game1.currentLocation;
 
             SortedList<string, SpecialObject> doors = new();
+            Dictionary<string, int> added_names = new();
+
             foreach (Point point in location.doors.Keys) {
                 string str = location.doors[point];
+
+                if(added_names.ContainsKey(str)) {
+                    added_names[str]++;
+                    str += $" {added_names[str]}";
+                } else {
+                    added_names.Add(str, 1);
+                }
+
                 doors[str] = new SpecialObject(str, new(point.X, point.Y));
             }
 
             foreach (Warp point in location.warps) {
-                if (point.TargetName.ToLower() == "desert") continue;
-                doors[point.TargetName] = new SpecialObject(point.TargetName, new(point.X, point.Y));
+                string str = point.TargetName;
+                if (str.ToLower() == "desert") continue;
+
+                if (added_names.ContainsKey(str)) {
+
+                    //make sure this warp is not directly next to an existing one
+
+                    bool add = true;
+
+                    int number = added_names[str];
+
+                    string name = str;
+                    if(number > 1) {
+                        name += $" {number}";
+                    }
+                    SpecialObject previous_warp = doors[name];
+
+                    for (int i = -5; i < 5; i++) {
+                        if (previous_warp.TileLocation.X == point.X && previous_warp.TileLocation.Y == point.Y + i) {
+                            add = false;
+                        }
+                        if (previous_warp.TileLocation.Y == point.Y && previous_warp.TileLocation.X == point.X + i) {
+                            add = false;
+                        }
+                    }
+
+                    if (add) {
+                        added_names[str]++;
+                        str += $" {added_names[str]}";
+                        doors[str] = new SpecialObject(str, new(point.X, point.Y));
+                    }
+                    
+                } else {
+                    added_names.Add(str, 1);
+                    doors[str] = new SpecialObject(str, new(point.X, point.Y));
+                }
+
+                
             }
 
             return doors;
