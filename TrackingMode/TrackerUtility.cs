@@ -208,6 +208,38 @@ namespace AccessibleTiles.TrackingMode {
                     string name = building.nameOfIndoorsWithoutUnique;
 <<<<<<< Updated upstream
                     if (name == null || name == "null") name = "unknown";//continue;
+=======
+                    if (building is GreenhouseBuilding) {
+                        name = "Greenhouse";
+                    }                                       
+
+                    if (building is FishPond) {
+                        string type = "Empty";
+                        if ((building as FishPond).GetFishObject().name != "Error Item") {
+                            type = (building as FishPond).GetFishObject().name;
+                        }
+                    
+                        name = $"{type} Fish Pond";
+
+                        Point loc = building.getPointForHumanDoor();
+                        SpecialObject sPond = new SpecialObject(name, new(loc.X+1, loc.Y+2));
+
+                        AddObject(ref detected_objects, sPond);
+                        continue;
+                    }
+
+                    if (building is ShippingBin) {
+                        name = "Shipping Bin";
+
+                        Point loc = building.getPointForHumanDoor();
+                        SpecialObject sBin = new SpecialObject(name, new(loc.X + 1, loc.Y + 2));
+
+                        AddObject(ref detected_objects, sBin);
+                        continue;
+                                        }                  
+
+                    if (name == null || name == "null") continue;
+>>>>>>> Stashed changes
                     name = name.TrimEnd(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
 
                     int count = 1;
@@ -236,6 +268,15 @@ namespace AccessibleTiles.TrackingMode {
                 }
 <<<<<<< Updated upstream
 
+=======
+            
+                /*if (Game1.player.hasGreenhouse || Game1.greenhouseTexture != null)  {
+                    Game1.locations.
+                    Rectangle bounds = Game1.greenhouseTexture.Bounds;
+                    SpecialObject sObject2 = new SpecialObject("Greenhouse", new(bounds.Center.X, bounds.Center.Y));
+                                        AddObject(ref detected_objects, sObject2);
+                }*/
+>>>>>>> Stashed changes
             }
 
             return detected_objects;
@@ -378,6 +419,7 @@ namespace AccessibleTiles.TrackingMode {
                 AddObject(ref characters, sObject);
             }
 
+            if (location.isTemp())  {
                 foreach (NPC npc in location.currentEvent.actors) {
                     SpecialObject sObject = new SpecialObject(npc.displayName, npc.getTileLocation());
                     AddObject(ref characters, sObject);
@@ -453,6 +495,11 @@ namespace AccessibleTiles.TrackingMode {
             }
             if (location is Beach) {
                 AddObject(ref points, new("Willy's Barrel", new(37, 31)));
+                if (Game1.isRaining) {
+                    AddObject(ref points, new("Old Mariner", new(80, 5)));
+                }
+
+            
             }
 
             return points;
