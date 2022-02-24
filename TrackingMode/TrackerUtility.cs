@@ -141,6 +141,52 @@ namespace AccessibleTiles.TrackingMode {
                 
             }
 
+            if (location is Farm) {
+
+                List<string> name_counts = new();
+
+                foreach (Building building in ((Farm)location).buildings) {
+
+                    string name = "";
+
+                    if (building is ShippingBin) {
+                        name = "Shipping Bin";
+
+                        Point loc = building.getPointForHumanDoor();
+                        SpecialObject sBin = new SpecialObject(name, new(loc.X + 1, loc.Y + 2));
+
+                        AddObject(ref detected_objects, sBin);
+                        continue;
+                    }
+                }
+
+                Point mailbox = (location as Farm).GetMainMailboxPosition();
+                SpecialObject sMailbox = new SpecialObject("Mailbox", new(mailbox.X, mailbox.Y));
+
+                AddObject(ref detected_objects, sMailbox);
+
+                if (mod.trackingMode.focusable.ContainsKey("FarmBuildings")) {
+                    int count = 0;
+
+                    foreach (SpecialObject info in mod.trackingMode.focusable["FarmBuildings"].Values) {
+                        mod.console.Debug(info.name);
+
+                        if (info.name.ToLower().Contains("cabin")) {
+                            count++;
+
+                            info.TileLocation.X += 2;
+                            info.TileLocation.Y += 1;
+
+                            sMailbox = new SpecialObject($"Cabin Mailbox {count}", info.TileLocation);
+
+                            AddObject(ref detected_objects, sMailbox);
+                        }
+                    }
+                }
+                
+
+            }
+
             return detected_objects;
         }
 
@@ -206,40 +252,27 @@ namespace AccessibleTiles.TrackingMode {
                 foreach (Building building in ((Farm)location).buildings) {
 
                     string name = building.nameOfIndoorsWithoutUnique;
-<<<<<<< Updated upstream
-                    if (name == null || name == "null") name = "unknown";//continue;
-=======
+
                     if (building is GreenhouseBuilding) {
                         name = "Greenhouse";
-                    }                                       
+                    }
 
                     if (building is FishPond) {
                         string type = "Empty";
                         if ((building as FishPond).GetFishObject().name != "Error Item") {
                             type = (building as FishPond).GetFishObject().name;
                         }
-                    
+
                         name = $"{type} Fish Pond";
 
                         Point loc = building.getPointForHumanDoor();
-                        SpecialObject sPond = new SpecialObject(name, new(loc.X+1, loc.Y+2));
+                        SpecialObject sPond = new SpecialObject(name, new(loc.X + 1, loc.Y + 2));
 
                         AddObject(ref detected_objects, sPond);
                         continue;
                     }
-
-                    if (building is ShippingBin) {
-                        name = "Shipping Bin";
-
-                        Point loc = building.getPointForHumanDoor();
-                        SpecialObject sBin = new SpecialObject(name, new(loc.X + 1, loc.Y + 2));
-
-                        AddObject(ref detected_objects, sBin);
-                        continue;
-                                        }                  
-
+                    
                     if (name == null || name == "null") continue;
->>>>>>> Stashed changes
                     name = name.TrimEnd(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
 
                     int count = 1;
@@ -260,23 +293,14 @@ namespace AccessibleTiles.TrackingMode {
                     //animal door
                     if (building.animalDoor != new Point(-1, -1)) {
 
+
                         door = Vector2.Round(building.getRectForAnimalDoor().Location.ToVector2() / Game1.tileSize).ToPoint();
                         sObject = new SpecialObject(name + " Animal Door", new(door.X, door.Y));
 
                         AddObject(ref detected_objects, sObject);
                     }
                 }
-<<<<<<< Updated upstream
 
-=======
-            
-                /*if (Game1.player.hasGreenhouse || Game1.greenhouseTexture != null)  {
-                    Game1.locations.
-                    Rectangle bounds = Game1.greenhouseTexture.Bounds;
-                    SpecialObject sObject2 = new SpecialObject("Greenhouse", new(bounds.Center.X, bounds.Center.Y));
-                                        AddObject(ref detected_objects, sObject2);
-                }*/
->>>>>>> Stashed changes
             }
 
             return detected_objects;

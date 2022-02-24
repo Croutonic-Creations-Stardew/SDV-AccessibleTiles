@@ -24,7 +24,7 @@ namespace AccessibleTiles {
         private IModHelper helper;
         private Boolean is_warping = false;
 
-        private Tracker trackingMode;
+        public Tracker trackingMode;
 
         private SButton? last_button = null;
 
