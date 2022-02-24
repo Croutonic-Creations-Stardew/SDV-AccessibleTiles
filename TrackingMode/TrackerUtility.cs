@@ -115,6 +115,26 @@ namespace AccessibleTiles.TrackingMode {
                 StardewValley.Object obj = location.objects[position];
                 string name = mod.stardewAccess.GetNameAtTile(position);
                 if(name != null) {
+
+                    if(obj.type == "Crafting" && obj.bigCraftable) {
+
+                        string[] trackable_machines = { "bee house", "cask", "press", "keg", "machine", "maker", "preserves jar", "bone mill", "kiln", "crystalarium", "furnace", "geode crusher", "tapper", "lightning rod", "incubator", "wood chipper", "worm bin", "loom" };
+                        
+                        foreach(string machine in trackable_machines) {
+                            if(name.ToLower().Contains(machine)) {
+
+                                if(obj.MinutesUntilReady > 0) {
+                                    name = $"Running {name}";
+                                } else if(obj.readyForHarvest) {
+                                    name = $"Harvestable {name}";
+                                } else {
+                                    name = $"Empty {name}";
+                                }
+                            }
+                        }
+
+                    }
+
                     SpecialObject sObject = new SpecialObject(name, position);
                     AddObject(ref detected_objects, sObject);
                 }
@@ -186,7 +206,7 @@ namespace AccessibleTiles.TrackingMode {
                 foreach (Building building in ((Farm)location).buildings) {
 
                     string name = building.nameOfIndoorsWithoutUnique;
-                    if (name == null || name == "null") continue;
+                    if (name == null || name == "null") name = "unknown";//continue;
                     name = name.TrimEnd(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
 
                     int count = 1;
@@ -213,6 +233,7 @@ namespace AccessibleTiles.TrackingMode {
                         AddObject(ref detected_objects, sObject);
                     }
                 }
+
             }
 
             return detected_objects;
