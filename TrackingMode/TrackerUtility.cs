@@ -206,6 +206,7 @@ namespace AccessibleTiles.TrackingMode {
                 foreach (Building building in ((Farm)location).buildings) {
 
                     string name = building.nameOfIndoorsWithoutUnique;
+<<<<<<< Updated upstream
                     if (name == null || name == "null") name = "unknown";//continue;
                     name = name.TrimEnd(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
 
@@ -233,6 +234,7 @@ namespace AccessibleTiles.TrackingMode {
                         AddObject(ref detected_objects, sObject);
                     }
                 }
+<<<<<<< Updated upstream
 
             }
 
@@ -376,7 +378,6 @@ namespace AccessibleTiles.TrackingMode {
                 AddObject(ref characters, sObject);
             }
 
-            if (location.isTemp()) {
                 foreach (NPC npc in location.currentEvent.actors) {
                     SpecialObject sObject = new SpecialObject(npc.displayName, npc.getTileLocation());
                     AddObject(ref characters, sObject);
