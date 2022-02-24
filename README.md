@@ -17,6 +17,7 @@ Accessibility mod which seeks to make movement and tracking easier.
 - PageUp/PageDown - Cycle through objects in current object category
 - HOME - Read the direction, distance and tile location of the nearest focused object
 - END - Read the tile location of the nearest focused object
+- CTRL + HOME - Automatically walk near focused object
 
 ### Tracking Utility Categories
 
