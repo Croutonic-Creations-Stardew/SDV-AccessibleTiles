@@ -55,7 +55,7 @@ namespace AccessibleTiles.TrackingMode {
             TrackCategory("Resources", TrackerUtility.GetResources(mod));
             TrackCategory("Bundles", TrackerUtility.GetBundles());
             TrackCategory("Characters", TrackerUtility.GetCharacters());
-            TrackCategory("Entrances", TrackerUtility.GetEntrances());
+            TrackCategory("Entrances", TrackerUtility.GetEntrances(mod));
             TrackCategory("FarmBuildings", TrackerUtility.GetBuildings());
             TrackCategory("P O I", TrackerUtility.GetPOIs());
 

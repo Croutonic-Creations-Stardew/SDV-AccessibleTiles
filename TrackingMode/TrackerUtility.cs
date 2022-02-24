@@ -437,7 +437,7 @@ namespace AccessibleTiles.TrackingMode {
 
         }
 
-        public static SortedList<string, SpecialObject> GetEntrances() {
+        public static SortedList<string, SpecialObject> GetEntrances(ModEntry mod) {
 
             GameLocation location = Game1.currentLocation;
 
@@ -475,12 +475,18 @@ namespace AccessibleTiles.TrackingMode {
                     }
                     SpecialObject previous_warp = doors[name];
 
+                    if (mod.IsColliding(new(point.X, point.Y))) {
+                        add = false;
+                    }
+
                     for (int i = -5; i < 5; i++) {
-                        if (previous_warp.TileLocation.X == point.X && previous_warp.TileLocation.Y == point.Y + i) {
-                            add = false;
-                        }
-                        if (previous_warp.TileLocation.Y == point.Y && previous_warp.TileLocation.X == point.X + i) {
-                            add = false;
+                        if(add) {
+                            if (previous_warp.TileLocation.X == point.X && previous_warp.TileLocation.Y == point.Y + i) {
+                                add = false;
+                            }
+                            if (previous_warp.TileLocation.Y == point.Y && previous_warp.TileLocation.X == point.X + i) {
+                                add = false;
+                            }
                         }
                     }
 
