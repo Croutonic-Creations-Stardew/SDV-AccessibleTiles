@@ -97,35 +97,6 @@ namespace AccessibleTiles.TrackingMode {
 
         }
 
-        /*private static string? GetClumpTileIndexName(int index) {
-            string? name = null;
-
-            switch (index) {
-                case 600:
-                    name = "Large Stump";
-                    break;
-                case 602:
-                    name = "Hollow Log";
-                    break;
-                case 622:
-                    name = "Meteorite";
-                    break;
-                case 752:
-                case 754:
-                case 756:
-                case 758:
-                    name = "Mine Rock";
-                    break;
-                case 672:
-                    name = "Boulder";
-                    break;
-                default:
-                    name = "Unknown";
-                    break;
-            }
-            return name;
-        }*/
-
         private static void AddObject(ref SortedList<string, SpecialObject> list, SpecialObject sObject) {
             if(list.ContainsKey(sObject.name)) {
                 sObject = GetClosest(sObject, (SpecialObject)list[sObject.name]);

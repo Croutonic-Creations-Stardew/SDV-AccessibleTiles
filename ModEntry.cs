@@ -38,6 +38,8 @@ namespace AccessibleTiles {
 
         public ConsoleUtil console;
 
+        public bool movingWithTracker = false;
+
         /*********
         ** Public methods
         *********/
@@ -54,6 +56,7 @@ namespace AccessibleTiles {
             grid_movement_active = Config.GridModeActiveByDefault;
 
             helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
+            helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecondUpdateTicked;
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.Player.Warped += Player_Warped;
@@ -78,12 +81,6 @@ namespace AccessibleTiles {
             }
             trackingMode.ScanArea(e.NewLocation, clear_focus: true);
         }
-        public void safeWait(int milliseconds, Action callback) {
-            var t = Task.Run(async delegate {
-                await Task.Delay(milliseconds);
-                callback();
-            });
-        }
 
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e) {
@@ -106,10 +103,14 @@ namespace AccessibleTiles {
 
             if(key_map.ContainsKey(e.Button)) {
                 direction = key_map[e.Button];
+                if(Game1.player.controller != null) {
+                    ClearPathfindingController();
+                }
+
             }
 
             if(e.Button == Config.GridCenterPlayerKey) {
-                //CenterPlayer(true);
+                CenterPlayer();
             }
 
             if (e.Button == Config.MovementTypeToggle) {
@@ -135,6 +136,11 @@ namespace AccessibleTiles {
 
             trackingMode.OnButtonPressed(sender, e);
 
+        }
+
+        private void ClearPathfindingController() {
+            Game1.player.controller = null;
+            movingWithTracker = false;
         }
 
         private void CenterPlayer() {
@@ -288,13 +294,14 @@ namespace AccessibleTiles {
                 location.isCropAtTile(X, Y) ||
                 force_pass);
 
-            console.Debug(answer.ToString() + " - " + back_index.ToString());
+            //console.Debug(answer.ToString() + " - " + back_index.ToString());
 
             return answer;
         }
 
         private int reset_on_tick_count = 15;
         private int held_for_ticks = 0;
+        private int moved_for_ticks = 0;
 
         private void UpdateTicked(object sender, UpdateTickedEventArgs e) {
 
@@ -329,7 +336,29 @@ namespace AccessibleTiles {
                 }
 
             }
-            
+
+            if (movingWithTracker) {
+                moved_for_ticks++;
+
+                if(moved_for_ticks > reset_on_tick_count) {
+                    Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation(), Game1.player);
+                    moved_for_ticks = 0;
+                }
+            } else {
+                moved_for_ticks = 0;
+            }
+
+        }
+
+        private void OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e) {
+
+            if (!Context.IsWorldReady)
+                return;
+
+            /*if(movingWithTracker) {
+                console.Debug("Play sound");
+                Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation(), Game1.player);
+            }*/
 
         }
 

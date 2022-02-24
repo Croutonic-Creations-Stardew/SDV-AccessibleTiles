@@ -113,14 +113,14 @@ namespace AccessibleTiles.TrackingMode {
 
             if (e.Button == this.read) {
                 if (e.IsDown(SButton.LeftControl) || e.IsDown(SButton.RightControl)) {
-                    ReadCurrentFocus(false, true);
+                    ReadCurrentFocus(false, true, false);
                 } else {
-                    ReadCurrentFocus(false, false);
+                    ReadCurrentFocus(false, false, false);
                 }
             }
 
             if (e.Button == this.readtile) {
-                ReadCurrentFocus(true, false);
+                ReadCurrentFocus(true, false, false);
             }
 
             if (e.Button == this.cycleup || e.Button == this.cycledown) {
@@ -173,11 +173,13 @@ namespace AccessibleTiles.TrackingMode {
             this.ChangeFocus(button, null, null);
         }
 
-        private void ReadCurrentFocus(bool tileOnly, bool autopath) {
+        private void ReadCurrentFocus(bool tileOnly, bool autopath, bool faceDirection) {
             if (focus_name != null && focus_type != null) {
 
+                Farmer player = Game1.player;
+
                 mod.console.Debug("run scan");
-                ScanArea(Game1.player.currentLocation);
+                ScanArea(player.currentLocation);
 
                 if(!focusable.ContainsKey(focus_type)) {
                     clearFocus();
@@ -191,7 +193,7 @@ namespace AccessibleTiles.TrackingMode {
                     return;
                 }
 
-                Vector2 position = Game1.player.getTileLocation();
+                Vector2 position = player.getTileLocation();
 
                 object focus = local_focusable[focus_name];
                 Vector2 location = (focus as SpecialObject).TileLocation;
@@ -207,15 +209,41 @@ namespace AccessibleTiles.TrackingMode {
                 location.X += Game1.tileSize / 4;
                 location.Y += Game1.tileSize / 4;
 
-                string direction = TrackerUtility.GetDirection(Game1.player.getTileLocation(), tileXY);
-                double distance = Math.Round(TrackerUtility.GetDistance(Game1.player.getTileLocation(), tileXY));
+                string direction = TrackerUtility.GetDirection(player.getTileLocation(), tileXY);
+                if(faceDirection) {
+                    if (direction == "North") {
+                        player.faceDirection(0);
+                    }
+                    if (direction == "East") {
+                        player.faceDirection(1);
+                    }
+                    if (direction == "South") {
+                        player.faceDirection(2);
+                    }
+                    if (direction == "West") {
+                        player.faceDirection(3);
+                    }
+                }
+                
+                double distance = Math.Round(TrackerUtility.GetDistance(player.getTileLocation(), tileXY));
 
                 //Game1.currentLocation.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(346, 400, 8, 8), 10f, 1, 50, tileXY, flicker: false, flipped: false, layerDepth: 999, 0f, Color.White, 4f, 0f, 0f, 0f));
-                autopath = false;
+                //autopath = false;
                 if(autopath) {
                     Vector2? closest_tile = GetClosestTile(tileXY);
+                    mod.console.Debug($"closest tile: {closest_tile}");
                     if (closest_tile != null) {
-                        Game1.player.controller = new PathFindController(Game1.player, Game1.currentLocation, new Point((int)closest_tile.Value.X, (int)closest_tile.Value.Y), -1);
+                        Vector2 tile = (Vector2)closest_tile;
+                        mod.movingWithTracker = true;
+                        player.controller = new PathFindController(player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1, (Character farmer, GameLocation location) => {
+                            direction = TrackerUtility.GetDirection(player.getTileLocation(), tile);
+                            
+                            ReadCurrentFocus(false, false, true);
+                            mod.movingWithTracker = false;
+                        });
+                        mod.stardewAccess.Say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);                        
+                    } else {
+                        mod.stardewAccess.Say($"Could not find open space around {focus_name} at {tileXY.X}-{tileXY.Y}.", true);
                     }
                 } else {
                     if (tileOnly) {
@@ -226,36 +254,65 @@ namespace AccessibleTiles.TrackingMode {
                 }
                 
                 mod.console.Debug($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}");
-            } else {
-                mod.console.Debug("no focus no type");
             }
 
         }
 
         private Vector2? GetClosestTile(Vector2 tileXY) {
 
-            mod.console.Debug("Finding tile...");
+            int radius = 3;
+            int layers = radius - 2;
 
-            int radius = 1;
-
-            Vector2 topLeft = new(tileXY.X - radius, tileXY.Y - radius);
-            Vector2 bottomRight = new(tileXY.X + radius, tileXY.Y + radius);
+            Vector2 topLeft = new(tileXY.X - layers, tileXY.Y - layers);
+            Vector2 bottomRight = new(tileXY.X + layers, tileXY.Y + layers);
 
             float currentX = topLeft.X;
             float currentY = topLeft.Y;
 
             Vector2? closest_tile = null;
+            double? closest_tile_distance = null;
+            double? closest_tile_distance_to_object = null;
 
-            for(int i = 0; i < 9 * radius; i++) {
-                if (currentX == tileXY.X && currentY == tileXY.Y) continue;
+            for (int i = 0; i <= radius * radius; i++) {
 
                 Vector2 tile = new(currentX, currentY);
 
+                mod.console.Debug($"{i}) {tile}");
+                if (currentX == tileXY.X && currentY == tileXY.Y) {
+                    currentX++;
+                    continue;
+                }
+
+                mod.console.Debug($"Check Tile: {tile}");
+
                 if (!mod.IsColliding(tile)) {
-                    if(closest_tile != null) {
-                        tile = TrackerUtility.GetClosest(tile, (Vector2)closest_tile);
+
+                    PathFindController controller = new PathFindController(Game1.player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1, eraseOldPathController: true);
+
+                    if(controller.pathToEndPoint != null) {
+
+                        int tile_distance = controller.pathToEndPoint.Count();
+                        double distance_to_object = TrackerUtility.GetDistance(tileXY, tile);
+
+                        if (closest_tile_distance == null) {
+                            closest_tile = tile;
+                            closest_tile_distance = tile_distance;
+                            closest_tile_distance_to_object = distance_to_object;
+                        }
+
+                        if (tile_distance <= closest_tile_distance && distance_to_object <= closest_tile_distance_to_object) {
+
+                            if(closest_tile == null) {
+                                closest_tile = tile;
+                                continue;
+                            }
+                            
+                            closest_tile = tile;
+                            closest_tile_distance = tile_distance;
+                            closest_tile_distance_to_object = distance_to_object;
+
+                        }
                     }
-                    closest_tile = tile;
                 }
 
                 currentX++;
