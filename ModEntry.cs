@@ -150,7 +150,7 @@ namespace AccessibleTiles {
             position.X = (int)Math.Round(position.X / Game1.tileSize) * Game1.tileSize;
             position.Y = (int)Math.Round(position.Y / Game1.tileSize) * Game1.tileSize;
 
-            Game1.player.Position = position;
+            Game1.player.Position = position;            
 
         }
 
@@ -289,7 +289,7 @@ namespace AccessibleTiles {
             if(back_index == 107 || back_index == 362 || back_index == 1274 || back_index == 1244) {
                 force_pass = true;
                 Game1.playSound("woodyStep");
-            }
+                        }
             
             bool answer = !(!location.isTileOccupiedIgnoreFloors(tile_vector) &&
                 location.isTilePassable(new Location(X, Y), Game1.viewport) &&
@@ -301,7 +301,6 @@ namespace AccessibleTiles {
                 force_pass);
 
             //console.Debug(answer.ToString() + " - " + back_index.ToString());
-            console.Debug($"Check {X},{Y}");
 
             return answer;
         }
@@ -353,17 +352,6 @@ namespace AccessibleTiles {
                 }
             } else {
                 moved_for_ticks = 0;
-                movingWithTracker = false;
-
-                if(trackingMode.controlled_npcs.Any()) {
-                    Task ignore = trackingMode.UnhaltNPCS();
-                }
-            }
-
-            if(trackingMode.controlled_npcs.Any() && Game1.player.controller != null && Game1.activeClickableMenu != null) {
-                Game1.player.controller = null;
-                movingWithTracker = false;
-                Task ignore = trackingMode.UnhaltNPCS();
             }
 
         }
