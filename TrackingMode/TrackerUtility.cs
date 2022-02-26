@@ -354,9 +354,10 @@ namespace AccessibleTiles.TrackingMode {
             if (Game1.IsMultiplayer && Game1.getOnlineFarmers().Count > 1) {
                 foreach (Farmer player in Game1.getOnlineFarmers()) {
                     SpecialObject sPlayer = new SpecialObject(player.displayName, player.getTileLocation());
-                    if (player.currentLocation != Game1.player.currentLocation) {
-                        sPlayer.reachable = false;
-                        sPlayer.unreachable_reason = $"Player is in {player.currentLocation.NameOrUniqueName} at {player.getTileLocation().X},{player.getTileLocation().Y}";
+                    if (player.currentLocation != Game1.player.currentLocation || player == Game1.player) {
+                        continue;
+                        /*sPlayer.reachable = false;
+                        sPlayer.unreachable_reason = $"Player is in {player.currentLocation.NameOrUniqueName} at {player.getTileLocation().X},{player.getTileLocation().Y}";*/
                     }
                     AddObject(ref detected_objects, sPlayer);
                 }
