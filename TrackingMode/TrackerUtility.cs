@@ -40,6 +40,131 @@ namespace AccessibleTiles.TrackingMode {
             { (46, 11), "Bulletin Board" },
         };
 
+        public static Dictionary<string, Dictionary<(int, int), string>> shop_counters = new() {
+            {
+                "JojaMart",
+                new() {
+                    { (10, 25), "Cashier Counter" },
+                    { (11, 18), "Joja Membership Counter" }
+                }
+            },
+            {
+                "Blacksmith",
+                new() {
+                    { (3, 14), "Shop Counter" }
+                }
+            },
+            {
+                "SeedShop",
+                new() {
+                    { (4, 18), "Shop Counter" }
+                }
+            },
+            {
+                "AnimalShop",
+                new() {
+                    { (12, 15), "Shop Counter" }
+                }
+            },
+            {
+                "ScienceHouse",
+                new() {
+                    { (8, 19), "Shop Counter" }
+                }
+            },
+            {
+                "AdventureGuild",
+                new() {
+                    { (5, 12), "Shop Counter" }
+                }
+            }
+        };
+
+        public static Dictionary<string, Dictionary<(int, int), string>> inner_rooms = new() {
+            {
+                "SamHouse",
+                new() {
+                    { (12, 14), "Sam's Room" },
+                    { (11, 18), "Vincent's Room" },
+                    { (17, 6), "Jodi's Room" }
+                }
+            },
+            {
+                "HaleyHouse",
+                new() {
+                    { (5, 13), "Haley's Room" },
+                    { (16, 12), "Emily's Room" },
+                }
+            },
+            {
+                "SeedShop",
+                new() {
+                    { (13, 12), "Abigail's Room" },
+                    { (20, 12), "Pierre and Coraline's Room" },
+                }
+            },
+            {
+                "Saloon",
+                new() {
+                    { (13, 12), "Open Room" },
+                    { (20, 9), "Gus's Room" },
+                }
+            },
+            {
+                "JoshHouse",
+                new() {
+                    { (10, 10), "Alex's Room" },
+                    { (5, 9), "Evelyn and George's Room" },
+                }
+            },
+            {
+                "ManorHouse",
+                new() {
+                    { (5, 12), "Lewis's Room" }
+                }
+            },
+            {
+                "Blacksmith",
+                new() {
+                    { (4, 9), "Clint's Room" }
+                }
+            },
+            {
+                "Trailer",
+                new() {
+                    { (6, 7), "Penny's Room" }
+                }
+            },
+            {
+                "ScienceHouse",
+                new() {
+                    { (7, 10), "Maru's Room" },
+                    { (13, 11), "Robin and Demetrius's Room" }
+                }
+            },
+            {
+                "SebastianRoom",
+                new() {
+                    { (7, 10), "Sebastian's Room" }
+                }
+            },
+            {
+                "AnimalShop",
+                new() {
+                    { (15, 12), "Marnie's Room" },
+                    { (6, 13), "Jas's Room" },
+                    { (21, 13), "Shane's Room" },
+                    { (30, 13), "Marnie's Barn" }
+                }
+            },
+            {
+                "WizardHouse",
+                new() {
+                    { (15, 12), "Wizard's Room" }
+                }
+            }
+        };
+
         public static SpecialObject GetClosest(SpecialObject item1, SpecialObject item2) {
 
             Vector2 player_tile = Game1.player.getTileLocation();
@@ -98,7 +223,7 @@ namespace AccessibleTiles.TrackingMode {
         }
 
         private static void AddObject(ref SortedList<string, SpecialObject> list, SpecialObject sObject) {
-            if(list.ContainsKey(sObject.name)) {
+            if (list.ContainsKey(sObject.name)) {
                 sObject = GetClosest(sObject, (SpecialObject)list[sObject.name]);
             }
             list[sObject.name] = sObject;
@@ -114,18 +239,18 @@ namespace AccessibleTiles.TrackingMode {
 
                 StardewValley.Object obj = location.objects[position];
                 string name = mod.stardewAccess.GetNameAtTile(position);
-                if(name != null) {
+                if (name != null) {
 
-                    if(obj.type == "Crafting" && obj.bigCraftable) {
+                    if (obj.type == "Crafting" && obj.bigCraftable) {
 
                         string[] trackable_machines = { "bee house", "cask", "press", "keg", "machine", "maker", "preserves jar", "bone mill", "kiln", "crystalarium", "furnace", "geode crusher", "tapper", "lightning rod", "incubator", "wood chipper", "worm bin", "loom" };
-                        
-                        foreach(string machine in trackable_machines) {
-                            if(name.ToLower().Contains(machine)) {
 
-                                if(obj.MinutesUntilReady > 0) {
+                        foreach (string machine in trackable_machines) {
+                            if (name.ToLower().Contains(machine)) {
+
+                                if (obj.MinutesUntilReady > 0) {
                                     name = $"Running {name}";
-                                } else if(obj.readyForHarvest) {
+                                } else if (obj.readyForHarvest) {
                                     name = $"Harvestable {name}";
                                 } else {
                                     name = $"Empty {name}";
@@ -138,7 +263,7 @@ namespace AccessibleTiles.TrackingMode {
                     SpecialObject sObject = new SpecialObject(name, position);
                     AddObject(ref detected_objects, sObject);
                 }
-                
+
             }
 
             if (location is Farm) {
@@ -183,8 +308,24 @@ namespace AccessibleTiles.TrackingMode {
                         }
                     }
                 }
-                
 
+            }
+
+            if (TrackerUtility.shop_counters.ContainsKey(location.Name)) {
+                foreach (((int, int) coords_raw, string name) in TrackerUtility.shop_counters[location.Name]) {
+
+                    mod.console.Debug($"{location.Name} - {coords_raw} - {name}");
+
+                    Vector2 coords = new(coords_raw.Item1, coords_raw.Item2);
+
+                    Vector2 pathfind_override = coords;
+                    pathfind_override.Y += 1;
+
+                    mod.console.Debug($"{location.Name} - {coords} - {pathfind_override} - {name}");
+
+                    SpecialObject sCounter = new SpecialObject(name, coords, pathfind_override);
+                    AddObject(ref detected_objects, sCounter);
+                }
             }
 
             return detected_objects;
@@ -208,12 +349,28 @@ namespace AccessibleTiles.TrackingMode {
             return detected_objects;
         }
 
+        public static SortedList<string, SpecialObject> GetPlayers(ModEntry mod) {
+            SortedList<string, SpecialObject> detected_objects = new();
+            if (Game1.IsMultiplayer && Game1.getOnlineFarmers().Count > 1) {
+                foreach (Farmer player in Game1.getOnlineFarmers()) {
+                    SpecialObject sPlayer = new SpecialObject(player.displayName, player.getTileLocation());
+                    if (player.currentLocation != Game1.player.currentLocation || player == Game1.player) {
+                        continue;
+                        /*sPlayer.reachable = false;
+                        sPlayer.unreachable_reason = $"Player is in {player.currentLocation.NameOrUniqueName} at {player.getTileLocation().X},{player.getTileLocation().Y}";*/
+                    }
+                    AddObject(ref detected_objects, sPlayer);
+                }
+            }
+            return detected_objects;
+        }
+
         public static SortedList<string, SpecialObject> GetCrops(ModEntry mod) {
             SortedList<string, SpecialObject> detected_objects = new();
             foreach (TerrainFeature feature in Game1.currentLocation.terrainFeatures.Values) {
                 if (feature is HoeDirt) {
                     HoeDirt dirt = (HoeDirt)feature;
-                    List<string> names = new();                    
+                    List<string> names = new();
 
                     if (dirt.crop != null) {
                         string cropName = Game1.objectInformation[dirt.crop.indexOfHarvest].Split('/')[0];
@@ -271,7 +428,7 @@ namespace AccessibleTiles.TrackingMode {
                         AddObject(ref detected_objects, sPond);
                         continue;
                     }
-                    
+
                     if (name == null || name == "null") continue;
                     name = name.TrimEnd(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
 
@@ -314,9 +471,9 @@ namespace AccessibleTiles.TrackingMode {
 
             foreach (Object feature in Game1.currentLocation.objects.Values) {
                 string name = mod.stardewAccess.GetNameAtTile(feature.TileLocation);
-                
 
-                if(name == null) {
+
+                if (name == null) {
                     continue;
                 }
 
@@ -405,7 +562,7 @@ namespace AccessibleTiles.TrackingMode {
 
                     string mood = animal.getMoodMessage();
                     string mood_text = "";
-                    if(mood.ToLower().Contains("thin")) {
+                    if (mood.ToLower().Contains("thin")) {
                         mood_text = " the Hungry ";
                     }
 
@@ -440,21 +597,46 @@ namespace AccessibleTiles.TrackingMode {
             SortedList<string, SpecialObject> characters = new();
             foreach (NPC npc in location.getCharacters()) {
                 SpecialObject sObject = new SpecialObject(npc.displayName, npc.getTileLocation());
+                sObject.character = npc;
                 AddObject(ref characters, sObject);
             }
 
-            if (location.isTemp())  {
+            if (location.isTemp()) {
                 foreach (NPC npc in location.currentEvent.actors) {
                     SpecialObject sObject = new SpecialObject(npc.displayName, npc.getTileLocation());
+                    sObject.character = npc;
                     AddObject(ref characters, sObject);
                 }
             }
-            
+
 
             return characters;
         }
 
-        public static SortedList<string, SpecialObject> GetPOIs() {
+        public static SortedList<string, SpecialObject> GetDoors() {
+
+            GameLocation location = Game1.currentLocation;
+            SortedList<string, SpecialObject> points = new();
+
+            if (TrackerUtility.inner_rooms.ContainsKey(location.Name)) {
+                foreach (((int, int) coords_raw, string name) in TrackerUtility.inner_rooms[location.Name]) {
+
+                    Vector2 coords = new(coords_raw.Item1, coords_raw.Item2);
+
+                    Vector2 pathfind_override = coords;
+                    pathfind_override.Y += 1;
+
+                    SpecialObject sDoor = new SpecialObject(name, coords, pathfind_override);
+                    points.Add(name, sDoor);
+                }
+            }
+
+
+            return points;
+
+        }
+
+        public static SortedList<string, SpecialObject> GetPOIs(ModEntry mod) {
 
             GameLocation location = Game1.currentLocation;
             SortedList<string, SpecialObject> points = new();
@@ -477,38 +659,35 @@ namespace AccessibleTiles.TrackingMode {
             if (location is Town) {
                 AddObject(ref points, new("Daily Quest Board", new(42, 53)));
                 AddObject(ref points, new("Special Orders Board", new(62, 93)));
-                if (location.currentEvent != null) {
-                    string event_name = location.currentEvent.FestivalName;
-                    if (event_name == "Egg Festival") {
-                        AddObject(ref points, new(event_name + " Shop", new(21, 55)));
-                    }
-                    if (event_name == "Flower Dance") {
-                        AddObject(ref points, new(event_name + " Shop", new(28, 37)));
-                    }
-                    if (event_name == "Luau") {
-                        AddObject(ref points, new(event_name + " Soup Pot", new(35, 13)));
-                    }
-                    if (event_name == "Spirit's Eve") {
-                        AddObject(ref points, new(event_name + " Shop", new(25, 49)));
-                    }
-                    if (event_name == "Stardew Valley Fair") {
-                        event_name = "Fair";
-                        AddObject(ref points, new(event_name + " Shop", new(16, 52)));
-                        AddObject(ref points, new("Slingshot Game", new(23, 62)));
-                        AddObject(ref points, new("Purchase Star Tokens", new(34, 65)));
-                        AddObject(ref points, new("Spin The Wheel", new(33, 70)));
-                        AddObject(ref points, new("Fishing Challenge", new(23, 70)));
-                        AddObject(ref points, new("Fortune Teller", new(47, 87)));
-                        AddObject(ref points, new("Grange Display", new(38, 59)));
-                        AddObject(ref points, new("Strength Game", new(30, 56)));
-                        AddObject(ref points, new("Free Burgers", new(26, 33)));
-                    }
-                    if (event_name == "Festival of Ice") {
-                        AddObject(ref points, new("Travelling Cart", new(55, 31)));
-                    }
-                    if (event_name == "Feast of the Winter Star") {
-                        AddObject(ref points, new(event_name + " Shop", new(18, 61)));
-                    }
+            }
+            if (location.currentEvent != null) {
+                mod.console.Debug("Event found");
+                string event_name = location.currentEvent.FestivalName;
+                if (event_name == "Egg Festival") {
+                    AddObject(ref points, new(event_name + " Shop", new(21, 55)));
+                } else if (event_name == "Flower Dance") {
+                    AddObject(ref points, new(event_name + " Shop", new(28, 37)));
+                } else if (event_name == "Luau") {
+                    AddObject(ref points, new(event_name + " Soup Pot", new(35, 13), new(35, 13)));
+                } else if (event_name == "Spirit's Eve") {
+                    AddObject(ref points, new(event_name + " Shop", new(25, 49)));
+                } else if (event_name == "Stardew Valley Fair") {
+                    event_name = "Fair";
+                    AddObject(ref points, new(event_name + " Shop", new(16, 52)));
+                    AddObject(ref points, new("Slingshot Game", new(23, 62)));
+                    AddObject(ref points, new("Purchase Star Tokens", new(34, 65)));
+                    AddObject(ref points, new("Spin The Wheel", new(33, 70)));
+                    AddObject(ref points, new("Fishing Challenge", new(23, 70)));
+                    AddObject(ref points, new("Fortune Teller", new(47, 87)));
+                    AddObject(ref points, new("Grange Display", new(38, 59)));
+                    AddObject(ref points, new("Strength Game", new(30, 56)));
+                    AddObject(ref points, new("Free Burgers", new(26, 33)));
+                } else if (event_name == "Festival of Ice") {
+                    AddObject(ref points, new("Travelling Cart", new(55, 31)));
+                } else if (event_name == "Feast of the Winter Star") {
+                    AddObject(ref points, new(event_name + " Shop", new(18, 61)));
+                } else {
+                    mod.console.Debug("Unhandled event " + event_name);
                 }
             }
             if (location.Name == "Saloon") {
@@ -523,7 +702,7 @@ namespace AccessibleTiles.TrackingMode {
                     AddObject(ref points, new("Old Mariner", new(80, 5)));
                 }
 
-            
+
             }
 
             return points;
@@ -540,14 +719,14 @@ namespace AccessibleTiles.TrackingMode {
             foreach (Point point in location.doors.Keys) {
                 string str = location.doors[point];
 
-                if(added_names.ContainsKey(str)) {
+                if (added_names.ContainsKey(str)) {
                     added_names[str]++;
                     str += $" {added_names[str]}";
                 } else {
                     added_names.Add(str, 1);
                 }
 
-                doors[str] = new SpecialObject(str, new(point.X, point.Y));
+                doors[str] = new SpecialObject(str, new(point.X, point.Y), new(point.X, point.Y + 1));
             }
 
             foreach (Warp point in location.warps) {
@@ -563,7 +742,7 @@ namespace AccessibleTiles.TrackingMode {
                     int number = added_names[str];
 
                     string name = str;
-                    if(number > 1) {
+                    if (number > 1) {
                         name += $" {number}";
                     }
                     SpecialObject previous_warp = doors[name];
@@ -573,7 +752,7 @@ namespace AccessibleTiles.TrackingMode {
                     }
 
                     for (int i = -5; i < 5; i++) {
-                        if(add) {
+                        if (add) {
                             if (previous_warp.TileLocation.X == point.X && previous_warp.TileLocation.Y == point.Y + i) {
                                 add = false;
                             }
@@ -588,13 +767,21 @@ namespace AccessibleTiles.TrackingMode {
                         str += $" {added_names[str]}";
                         doors[str] = new SpecialObject(str, new(point.X, point.Y));
                     }
-                    
+
                 } else {
                     added_names.Add(str, 1);
                     doors[str] = new SpecialObject(str, new(point.X, point.Y));
                 }
 
-                
+                if (str.ToLower().Contains("sunroom")) {
+
+                    Vector2 pathfind_override = doors[str].TileLocation;
+                    pathfind_override.Y += 1;
+
+                    doors[str].PathfindingOverride = pathfind_override;
+                }
+
+
             }
 
             return doors;
