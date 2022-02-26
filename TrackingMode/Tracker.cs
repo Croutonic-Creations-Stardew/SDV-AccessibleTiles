@@ -5,12 +5,15 @@ using StardewValley;
 using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace AccessibleTiles.TrackingMode {
     public class Tracker {
-        
+
         private ModEntry mod;
         //public GameLocation? last_location;
 
@@ -48,7 +51,7 @@ namespace AccessibleTiles.TrackingMode {
             focusable.Clear();
 
             TrackCategory("FarmBuildings", TrackerUtility.GetBuildings());
-            TrackCategory("Objects", TrackerUtility.GetObjects(mod));
+            TrackCategory("Objects", TrackerUtility.GetObjects(mod)); //utilizes on FarmBuildings sometimes
             TrackCategory("Resource Clumps", TrackerUtility.GetResourceClumps(mod));
             TrackCategory("Animals", TrackerUtility.GetAnimals(mod));
             TrackCategory("Mining", TrackerUtility.GetMining(mod));
@@ -57,7 +60,9 @@ namespace AccessibleTiles.TrackingMode {
             TrackCategory("Bundles", TrackerUtility.GetBundles());
             TrackCategory("Characters", TrackerUtility.GetCharacters());
             TrackCategory("Entrances", TrackerUtility.GetEntrances(mod));
-            TrackCategory("P O I", TrackerUtility.GetPOIs());
+            TrackCategory("P O I", TrackerUtility.GetPOIs(mod));
+            TrackCategory("Doors", TrackerUtility.GetDoors());
+            TrackCategory("Players", TrackerUtility.GetPlayers(mod));
 
             if (focus_name == null || focus_type == null || (bool)clear_focus) {
                 clearFocus();
@@ -72,8 +77,8 @@ namespace AccessibleTiles.TrackingMode {
         }
 
         public void clearFocus() {
-            foreach(string cat in categories) {
-                if(focusable.ContainsKey(cat)) {
+            foreach (string cat in categories) {
+                if (focusable.ContainsKey(cat)) {
                     focus_type = cat;
                     object focus = focusable[focus_type].Values[0];
                     focus_name = (focus as SpecialObject).name;
@@ -104,7 +109,7 @@ namespace AccessibleTiles.TrackingMode {
                 mod.stardewAccess.Say("No Categories Found", true);
             }
         }
-        
+
         internal void OnButtonPressed(object sender, ButtonPressedEventArgs e) {
 
             if (mod.stardewAccess == null || Game1.activeClickableMenu != null) {
@@ -124,12 +129,12 @@ namespace AccessibleTiles.TrackingMode {
             }
 
             if (e.Button == this.cycleup || e.Button == this.cycledown) {
-                if(e.IsDown(SButton.LeftControl) || e.IsDown(SButton.RightControl)) {
+                if (e.IsDown(SButton.LeftControl) || e.IsDown(SButton.RightControl)) {
                     ChangeCategory(e.Button);
                 } else {
                     ChangeFocus(e.Button);
                 }
-                
+
             }
 
         }
@@ -173,6 +178,8 @@ namespace AccessibleTiles.TrackingMode {
             this.ChangeFocus(button, null, null);
         }
 
+        public Dictionary<string, (NPC, int)> controlled_npcs = new();
+
         private void ReadCurrentFocus(bool tileOnly, bool autopath, bool faceDirection) {
             if (focus_name != null && focus_type != null) {
 
@@ -181,7 +188,7 @@ namespace AccessibleTiles.TrackingMode {
                 mod.console.Debug("run scan");
                 ScanArea(player.currentLocation);
 
-                if(!focusable.ContainsKey(focus_type)) {
+                if (!focusable.ContainsKey(focus_type)) {
                     clearFocus();
                     return;
                 }
@@ -195,11 +202,11 @@ namespace AccessibleTiles.TrackingMode {
 
                 Vector2 position = player.getTileLocation();
 
-                object focus = local_focusable[focus_name];
-                Vector2 location = (focus as SpecialObject).TileLocation;
+                SpecialObject focus = local_focusable[focus_name];
+                Vector2 location = focus.TileLocation;
                 //str += $"{focus_name} at {focus.TileLocation.X}-{focus.TileLocation.Y}, ";
 
-                if(focus == null || location == Vector2.Zero) {
+                if (focus == null || location == Vector2.Zero) {
                     mod.console.Debug("focus is null or location is zero. " + location.ToString());
                     return;
                 }
@@ -210,7 +217,7 @@ namespace AccessibleTiles.TrackingMode {
                 location.Y += Game1.tileSize / 4;
 
                 string direction = TrackerUtility.GetDirection(player.getTileLocation(), tileXY);
-                if(faceDirection) {
+                if (faceDirection) {
                     if (direction == "North") {
                         player.faceDirection(0);
                     }
@@ -224,38 +231,67 @@ namespace AccessibleTiles.TrackingMode {
                         player.faceDirection(3);
                     }
                 }
-                
+
                 double distance = Math.Round(TrackerUtility.GetDistance(player.getTileLocation(), tileXY));
 
                 //Game1.currentLocation.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(346, 400, 8, 8), 10f, 1, 50, tileXY, flicker: false, flipped: false, layerDepth: 999, 0f, Color.White, 4f, 0f, 0f, 0f));
                 //autopath = false;
-                if(autopath) {
-                    Vector2? closest_tile = GetClosestTile(tileXY);
-                    mod.console.Debug($"closest tile: {closest_tile}");
-                    if (closest_tile != null) {
-                        Vector2 tile = (Vector2)closest_tile;
-                        mod.movingWithTracker = true;
-                        player.controller = new PathFindController(player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1, (Character farmer, GameLocation location) => {
-                            direction = TrackerUtility.GetDirection(player.getTileLocation(), tile);
-                            
-                            ReadCurrentFocus(false, false, true);
-                            mod.movingWithTracker = false;
-                        });
-                        mod.stardewAccess.Say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);                        
+                if (focus.reachable != false) {
+                    if (autopath) {
+                        Vector2? closest_tile = null;
+                        if (focus.PathfindingOverride != null) {
+                            closest_tile = focus.PathfindingOverride;
+                        } else {
+                            closest_tile = GetClosestTile(tileXY);
+                        }
+
+                        mod.console.Debug($"closest tile: {closest_tile}");
+                        if (closest_tile != null) {
+                            Vector2 tile = (Vector2)closest_tile;
+                            mod.movingWithTracker = true;
+
+                            if (focus.character != null) {
+                                mod.console.Debug("Freeze npc being travelled to");
+                                controlled_npcs.Add(focus.name, (focus.character, focus.character.speed));
+
+                                (focus.character as NPC).speed = 0;
+                            }
+
+                            player.controller = new PathFindController(player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1, (Character farmer, GameLocation location) => {
+                                direction = TrackerUtility.GetDirection(player.getTileLocation(), tile);
+                                ReadCurrentFocus(false, false, true);
+                                mod.movingWithTracker = false;
+                                Task ignore = UnhaltNPCS();
+                            });
+                            mod.stardewAccess.Say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
+                        } else {
+                            mod.stardewAccess.Say($"Could not find path to {focus_name} at {tileXY.X}-{tileXY.Y}.", true);
+                        }
                     } else {
-                        mod.stardewAccess.Say($"Could not find path to {focus_name} at {tileXY.X}-{tileXY.Y}.", true);
+                        if (tileOnly) {
+                            mod.stardewAccess.Say($"{focus_name} is at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}", true);
+                        } else {
+                            mod.stardewAccess.Say($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}", true);
+                        }
                     }
+                    mod.console.Debug($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}");
                 } else {
-                    if (tileOnly) {
-                        mod.stardewAccess.Say($"{focus_name} is at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}", true);
-                    } else {
-                        mod.stardewAccess.Say($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}", true);
-                    }
+                    mod.stardewAccess.Say(focus.unreachable_reason, true);
+                    mod.console.Debug(focus.unreachable_reason);
                 }
-                
-                mod.console.Debug($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}");
+
+
             }
 
+        }
+
+        public async Task UnhaltNPCS() {
+            await Task.Delay(3000);
+            foreach (var key_value in controlled_npcs) {
+                (NPC, int) npc = key_value.Value;
+                npc.Item1.speed = npc.Item2;
+            }
+            controlled_npcs.Clear();
         }
 
         private Vector2? GetClosestTile(Vector2 tileXY) {
@@ -289,7 +325,7 @@ namespace AccessibleTiles.TrackingMode {
 
                     PathFindController controller = new PathFindController(Game1.player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1, eraseOldPathController: true);
 
-                    if(controller.pathToEndPoint != null) {
+                    if (controller.pathToEndPoint != null) {
 
                         int tile_distance = controller.pathToEndPoint.Count();
                         double distance_to_object = TrackerUtility.GetDistance(tileXY, tile);
@@ -302,11 +338,11 @@ namespace AccessibleTiles.TrackingMode {
 
                         if (tile_distance <= closest_tile_distance && distance_to_object <= closest_tile_distance_to_object) {
 
-                            if(closest_tile == null) {
+                            if (closest_tile == null) {
                                 closest_tile = tile;
                                 continue;
                             }
-                            
+
                             closest_tile = tile;
                             closest_tile_distance = tile_distance;
                             closest_tile_distance_to_object = distance_to_object;
@@ -317,7 +353,7 @@ namespace AccessibleTiles.TrackingMode {
 
                 currentX++;
 
-                if(currentX > bottomRight.X) {
+                if (currentX > bottomRight.X) {
                     currentX = topLeft.X;
                     currentY++;
                 }
@@ -333,9 +369,25 @@ public class SpecialObject {
 
     public string name;
     public Vector2 TileLocation;
+    public Vector2? PathfindingOverride;
+
+    public NPC? character;
+    public bool reachable = true;
+
+    public string? unreachable_reason;
+
+    public SpecialObject(string name) {
+        this.name = name;
+    }
 
     public SpecialObject(string name, Vector2 location) {
         this.name = name;
         this.TileLocation = location;
+    }
+
+    public SpecialObject(string name, Vector2 location, Vector2 path_override) {
+        this.name = name;
+        this.TileLocation = location;
+        this.PathfindingOverride = path_override;
     }
 }

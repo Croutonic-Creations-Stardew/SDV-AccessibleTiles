@@ -76,7 +76,7 @@ namespace AccessibleTiles {
         }
 
         private void Player_Warped(object sender, WarpedEventArgs e) {
-            if(this.is_warping) {
+            if (this.is_warping) {
                 this.is_warping = false;
             }
             trackingMode.ScanArea(e.NewLocation, clear_focus: true);
@@ -101,23 +101,23 @@ namespace AccessibleTiles {
 
             int direction = -1;
 
-            if(key_map.ContainsKey(e.Button)) {
+            if (key_map.ContainsKey(e.Button)) {
                 direction = key_map[e.Button];
-                if(Game1.player.controller != null) {
+                if (Game1.player.controller != null) {
                     ClearPathfindingController();
                 }
 
             }
 
-            if(e.Button == Config.GridCenterPlayerKey) {
+            if (e.Button == Config.GridCenterPlayerKey) {
                 CenterPlayer();
             }
 
             if (e.Button == Config.MovementTypeToggle) {
                 grid_movement_active = !grid_movement_active;
-                
-                if(stardewAccess != null) {
-                    if(grid_movement_active) {
+
+                if (stardewAccess != null) {
+                    if (grid_movement_active) {
                         stardewAccess.Say("Activated Grid Movement", true);
                     } else {
                         stardewAccess.Say("Deactivated Grid Movement", true);
@@ -127,7 +127,7 @@ namespace AccessibleTiles {
 
             if (direction != -1) {
 
-                if(grid_movement_active) {
+                if (grid_movement_active) {
                     last_button = e.Button;
                     HandleArrowMovement(direction);
                 }
@@ -150,7 +150,7 @@ namespace AccessibleTiles {
             position.X = (int)Math.Round(position.X / Game1.tileSize) * Game1.tileSize;
             position.Y = (int)Math.Round(position.Y / Game1.tileSize) * Game1.tileSize;
 
-            Game1.player.Position = position;            
+            Game1.player.Position = position;
 
         }
 
@@ -159,7 +159,7 @@ namespace AccessibleTiles {
         private void HandleArrowMovement(int direction) {
 
             //stop if player is using their tool, otherwise the player may glitch out.
-            if(Game1.player.UsingTool || this.is_warping) {
+            if (Game1.player.UsingTool || this.is_warping) {
                 return;
             }
 
@@ -168,7 +168,7 @@ namespace AccessibleTiles {
 
             Game1.player.CanMove = false;
 
-            if(Game1.player.FacingDirection != direction) {
+            if (Game1.player.FacingDirection != direction) {
                 Game1.player.faceDirection(direction);
                 Game1.playSound("dwop");
                 return;
@@ -178,7 +178,7 @@ namespace AccessibleTiles {
             var X = (int)Math.Round(position.X / Game1.tileSize);
             var Y = (int)Math.Round(position.Y / Game1.tileSize);
 
-            switch(direction) {
+            switch (direction) {
                 case 0:
                     Y -= 1;
                     break;
@@ -216,12 +216,12 @@ namespace AccessibleTiles {
                 }
 
                 //check if player is trying to collide with an object
-                if(Game1.currentLocation.isObjectAtTile(X, Y)) {
+                if (Game1.currentLocation.isObjectAtTile(X, Y)) {
 
                     StardewValley.Object obj = Game1.currentLocation.getObjectAtTile(X, Y);
                     String object_name = obj.DisplayName;
-                    
-                    if(object_name.ToLower().Contains("bed")) {
+
+                    if (object_name.ToLower().Contains("bed")) {
                         if (hasCheckedBed == false) {
                             Vector2 bed_position = obj.TileLocation;
                             bed_position.Y += 1;
@@ -286,21 +286,22 @@ namespace AccessibleTiles {
             string passable = location.doesTileHaveProperty(X, Y, "Passable", "Back");
             //console.Debug();
 
-            if(back_index == 107 || back_index == 362 || back_index == 1274 || back_index == 1244) {
+            if (back_index == 107 || back_index == 362 || back_index == 1274 || back_index == 1244) {
                 force_pass = true;
                 Game1.playSound("woodyStep");
-                        }
-            
+            }
+
             bool answer = !(!location.isTileOccupiedIgnoreFloors(tile_vector) &&
                 location.isTilePassable(new Location(X, Y), Game1.viewport) &&
                 !location.isWaterTile(X, Y) &&
-                !location.isOpenWater(X, Y) && 
+                !location.isOpenWater(X, Y) &&
                 !location.isTileOccupiedForPlacement(tile_vector) &&
                 pass_feature_check ||
                 location.isCropAtTile(X, Y) ||
                 force_pass);
 
             //console.Debug(answer.ToString() + " - " + back_index.ToString());
+            console.Debug($"Check {X},{Y}");
 
             return answer;
         }
@@ -314,7 +315,7 @@ namespace AccessibleTiles {
             if (!Context.IsWorldReady)
                 return;
 
-            if(last_button != null) {
+            if (last_button != null) {
 
                 var buttonState = this.Helper.Input.GetState((SButton)last_button);
                 if (buttonState == SButtonState.Held || buttonState == SButtonState.Pressed) {
@@ -323,18 +324,18 @@ namespace AccessibleTiles {
 
                     int tick_count = reset_on_tick_count;
 
-                    #if DEBUG
-                        var ctrlState = this.Helper.Input.GetState(SButton.LeftControl);
-                        if (ctrlState == SButtonState.Held) {
-                            tick_count /= 2;
-                        }
-                    #endif
+#if DEBUG
+                    var ctrlState = this.Helper.Input.GetState(SButton.LeftControl);
+                    if (ctrlState == SButtonState.Held) {
+                        tick_count /= 2;
+                    }
+#endif
 
                     if (held_for_ticks > tick_count) {
                         HandleArrowMovement(key_map[(SButton)last_button]);
                         held_for_ticks = 0;
                     }
-                    
+
                 } else {
                     last_button = null;
                     held_for_ticks = 0;
@@ -346,12 +347,23 @@ namespace AccessibleTiles {
             if (movingWithTracker) {
                 moved_for_ticks++;
 
-                if(moved_for_ticks > reset_on_tick_count) {
+                if (moved_for_ticks > reset_on_tick_count) {
                     Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation(), Game1.player);
                     moved_for_ticks = 0;
                 }
             } else {
                 moved_for_ticks = 0;
+                movingWithTracker = false;
+
+                if (trackingMode.controlled_npcs.Any()) {
+                    Task ignore = trackingMode.UnhaltNPCS();
+                }
+            }
+
+            if (trackingMode.controlled_npcs.Any() && Game1.player.controller != null && Game1.activeClickableMenu != null) {
+                Game1.player.controller = null;
+                movingWithTracker = false;
+                Task ignore = trackingMode.UnhaltNPCS();
             }
 
         }
