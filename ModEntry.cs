@@ -11,6 +11,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Locations;
+using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
 using xTile.Dimensions;
 using xTile.Layers;
@@ -92,6 +93,13 @@ namespace AccessibleTiles {
         }
 
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e) {
+
+            if (key_map.ContainsKey(e.Button) && Game1.activeClickableMenu is not GameMenu) {
+                if (Game1.player.controller != null) {
+                    ClearPathfindingController();
+                }
+            }
+
             // ignore if player hasn't loaded a save yet, make sure no interface is open, and make sure player can move
             if (!Context.IsWorldReady || Game1.activeClickableMenu != null || !Game1.player.CanMove)
                 return;
@@ -103,10 +111,6 @@ namespace AccessibleTiles {
 
             if (key_map.ContainsKey(e.Button)) {
                 direction = key_map[e.Button];
-                if (Game1.player.controller != null) {
-                    ClearPathfindingController();
-                }
-
             }
 
             if (e.Button == Config.GridCenterPlayerKey) {
@@ -345,15 +349,17 @@ namespace AccessibleTiles {
             }
 
             if (movingWithTracker) {
+                Game1.player.UsingTool = false;
                 moved_for_ticks++;
 
                 if (moved_for_ticks > reset_on_tick_count) {
-                    Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation(), Game1.player);
+                    if(Game1.activeClickableMenu == null) {
+                        Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation(), Game1.player);
+                    }
                     moved_for_ticks = 0;
                 }
             } else {
                 moved_for_ticks = 0;
-                movingWithTracker = false;
 
                 if (trackingMode.controlled_npcs.Any()) {
                     Task ignore = trackingMode.UnhaltNPCS();

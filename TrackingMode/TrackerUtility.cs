@@ -63,7 +63,8 @@ namespace AccessibleTiles.TrackingMode {
             {
                 "SeedShop",
                 new() {
-                    { (4, 18), "Shop Counter" }
+                    { (4, 18), "Shop Counter" },
+                    { (7, 18), "Backpack Purchase Counter" }
                 }
             },
             {
