@@ -18,6 +18,7 @@ Accessibility mod which seeks to make movement and tracking easier.
 - HOME - Read the direction, distance and tile location of the nearest focused object
 - END - Read the tile location of the nearest focused object
 - CTRL + HOME - Automatically walk near focused object
+- SCROLL LOCK to change tracker object sort type
 
 ### Tracking Utility Categories
 
@@ -35,6 +36,12 @@ Any given category will only be selectable if there are objects that fit into th
 - POI
 - Resources 
 - FarmBuildings
+- Players
+- Doors (internal doors)
+
+#### Sort Types
+- By Name
+- By Proximity (closest first)
 
 # Get The Mod
 The latest version of the mod can always be found at [GrumpyCrouton.com](https://stardew.grumpycrouton.com)
