@@ -22,7 +22,6 @@ namespace AccessibleTiles.TrackingMode {
 
         public bool sort_by_proxy = false;
         public SortedList<string, Dictionary<string, SpecialObject>> focusable = new();
-        //public SortedList<string, Dictionary<string, SpecialObject>> focusable_proxy = new();
 
         private SButton read;
         private SButton cycleup;
@@ -47,10 +46,6 @@ namespace AccessibleTiles.TrackingMode {
 
 
         public void ScanArea(GameLocation location, Boolean? clear_focus) {
-
-            if (mod.stardewAccess == null) {
-                return;
-            }
 
             focusable.Clear();
 
@@ -104,6 +99,12 @@ namespace AccessibleTiles.TrackingMode {
             }
         }
 
+        private void say(string text, bool force) {
+            if(mod.stardewAccess != null) {
+                mod.stardewAccess.Say(text, force);
+            }
+        }
+
         public void ChangeCategory(SButton button) {
 
             if (focus_type != null && focusable.ContainsKey(focus_type)) {
@@ -119,11 +120,11 @@ namespace AccessibleTiles.TrackingMode {
                     focus_name = (focus as SpecialObject).name;
 
                 }
-                mod.stardewAccess.Say(focus_type + " Category,  Focus - " + focus_name, true);
+                this.say(focus_type + " Category,  Focus - " + focus_name, true);
 
             } else {
                 mod.console.Debug(focusable.ToArray().ToString());
-                mod.stardewAccess.Say("No Categories Found", true);
+                this.say("No Categories Found", true);
             }
         }
 
@@ -160,10 +161,10 @@ namespace AccessibleTiles.TrackingMode {
                 foreach (string key in focusable.Keys) {
                     if (prev_proxy == true) {
                         sort_by_proxy = false;
-                        mod.stardewAccess.Say("Sorting by Name", true);
+                        this.say("Sorting by Name", true);
                     } else {
                         sort_by_proxy = true;
-                        mod.stardewAccess.Say("Sorting by Proximity", true);
+                        this.say("Sorting by Proximity", true);
                     }
                 }
                 mod.console.Debug("Proxy Sort: " + sort_by_proxy.ToString());
@@ -174,7 +175,7 @@ namespace AccessibleTiles.TrackingMode {
         private void ChangeFocus(SButton? button, int? key, string? extra_details) {
 
             if (focusable.Count() < 1 || !focusable.ContainsKey(focus_type)) {
-                mod.stardewAccess.Say("Nothing Found.", true);
+                this.say("Nothing Found.", true);
                 return;
             }
 
@@ -202,7 +203,7 @@ namespace AccessibleTiles.TrackingMode {
                 focus_name = (focus as SpecialObject).name;
             }
 
-            mod.stardewAccess.Say(extra_details + $"{focus_name} focused, " + extra_details_end, true);
+            this.say(extra_details + $"{focus_name} focused, " + extra_details_end, true);
             mod.console.Debug(extra_details + $"Focused on {focus_name}., " + extra_details_end);
         }
 
@@ -295,20 +296,20 @@ namespace AccessibleTiles.TrackingMode {
                                 mod.movingWithTracker = false;
                                 Task ignore = UnhaltNPCS();
                             });
-                            mod.stardewAccess.Say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
+                            this.say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
                         } else {
-                            mod.stardewAccess.Say($"Could not find path to {focus_name} at {tileXY.X}-{tileXY.Y}.", true);
+                            this.say($"Could not find path to {focus_name} at {tileXY.X}-{tileXY.Y}.", true);
                         }
                     } else {
                         if (tileOnly) {
-                            mod.stardewAccess.Say($"{focus_name} is at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}", true);
+                            this.say($"{focus_name} is at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}", true);
                         } else {
-                            mod.stardewAccess.Say($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}", true);
+                            this.say($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}", true);
                         }
                     }
                     mod.console.Debug($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}");
                 } else {
-                    mod.stardewAccess.Say(focus.unreachable_reason, true);
+                    this.say(focus.unreachable_reason, true);
                     mod.console.Debug(focus.unreachable_reason);
                 }
 
