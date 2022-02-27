@@ -49,6 +49,12 @@ namespace AccessibleTiles.TrackingMode {
                 }
             },
             {
+                "Hospital",
+                new() {
+                    { (6, 16), "Shop Counter" }
+                }
+            },
+            {
                 "Blacksmith",
                 new() {
                     { (3, 14), "Shop Counter" }
@@ -100,7 +106,8 @@ namespace AccessibleTiles.TrackingMode {
                 "SeedShop",
                 new() {
                     { (13, 12), "Abigail's Room" },
-                    { (20, 12), "Pierre and Coraline's Room" },
+                    { (14, 16), "Gathering room door" },
+                    { (20, 12), "Pierre and Caroline's Room" },
                 }
             },
             {
