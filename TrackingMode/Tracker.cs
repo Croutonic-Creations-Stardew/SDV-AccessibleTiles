@@ -20,21 +20,25 @@ namespace AccessibleTiles.TrackingMode {
         String? focus_name;
         String? focus_type;
 
-        public SortedList<string, SortedList<string, SpecialObject>> focusable = new();
+        public bool sort_by_proxy = false;
+        public SortedList<string, Dictionary<string, SpecialObject>> focusable = new();
+        //public SortedList<string, Dictionary<string, SpecialObject>> focusable_proxy = new();
 
         private SButton read;
         private SButton cycleup;
         private SButton cycledown;
         private SButton readtile;
+        private SButton sort_order_toggle;
 
         public string[] categories = { "Mining", "Objects", "Crops", "Animals", "Entrances", "Characters", "Resource Clumps", "Bundles", "P O I", "Resources", "FarmBuildings" };
 
-        public Tracker(ModEntry mod, SButton read, SButton cycleup, SButton cycledown, SButton readtile) {
+        public Tracker(ModEntry mod) {
             this.mod = mod;
-            this.read = read;
-            this.cycleup = cycleup;
-            this.cycledown = cycledown;
-            this.readtile = readtile;
+            this.read = mod.Config.TrackingModeRead;
+            this.cycleup = mod.Config.TrackingModeCycleUp;
+            this.cycledown = mod.Config.TrackingModeCycleDown;
+            this.readtile = mod.Config.TrackingModeGetTile;
+            this.sort_order_toggle = mod.Config.TrackingToggleSortingMode;
         }
 
         public void ScanArea(GameLocation location) {
@@ -64,13 +68,26 @@ namespace AccessibleTiles.TrackingMode {
             TrackCategory("Doors", TrackerUtility.GetDoors());
             TrackCategory("Players", TrackerUtility.GetPlayers(mod));
 
+            if(focusable.Count() > 0 && sort_by_proxy) {
+                SortedList<string, Dictionary<string, SpecialObject>> tmp = new();
+                foreach (string key in focusable.Keys) {
+                    mod.console.Debug("Proxy...");
+                    tmp[key] = focusable[key].Values.OrderBy(v => TrackerUtility.GetDistance(Game1.player.getTileLocation(), v.TileLocation)).ToDictionary(x => x.name, x => x);
+                }
+                foreach(string key in tmp.Keys) {
+                    focusable[key] = tmp[key].Values.ToDictionary(x => x.name, x => x);
+                }
+                tmp.Clear();
+            }
+            
+
             if (focus_name == null || focus_type == null || (bool)clear_focus) {
                 clearFocus();
             }
 
 
         }
-        private void TrackCategory(string name, SortedList<string, SpecialObject> objects) {
+        private void TrackCategory(string name, Dictionary<string, SpecialObject> objects) {
             if (objects.Count() > 0) {
                 focusable.Add(name, objects);
             }
@@ -80,7 +97,7 @@ namespace AccessibleTiles.TrackingMode {
             foreach (string cat in categories) {
                 if (focusable.ContainsKey(cat)) {
                     focus_type = cat;
-                    object focus = focusable[focus_type].Values[0];
+                    object focus = focusable[focus_type].Values.First();
                     focus_name = (focus as SpecialObject).name;
                     return;
                 }
@@ -98,7 +115,7 @@ namespace AccessibleTiles.TrackingMode {
                     focus_type = focusable.Keys[index];
                     mod.console.Debug("Change Category: " + focus_type);
 
-                    object focus = focusable[focus_type].Values[0];
+                    object focus = focusable[focus_type].Values.First();
                     focus_name = (focus as SpecialObject).name;
 
                 }
@@ -137,6 +154,21 @@ namespace AccessibleTiles.TrackingMode {
 
             }
 
+            if(e.Button == this.sort_order_toggle) {
+                mod.console.Debug("Change Sorting... " + sort_by_proxy);
+                bool prev_proxy = sort_by_proxy;
+                foreach (string key in focusable.Keys) {
+                    if (prev_proxy == true) {
+                        sort_by_proxy = false;
+                        mod.stardewAccess.Say("Sorting by Name", true);
+                    } else {
+                        sort_by_proxy = true;
+                        mod.stardewAccess.Say("Sorting by Proximity", true);
+                    }
+                }
+                mod.console.Debug("Proxy Sort: " + sort_by_proxy.ToString());
+            }
+
         }
 
         private void ChangeFocus(SButton? button, int? key, string? extra_details) {
@@ -146,7 +178,7 @@ namespace AccessibleTiles.TrackingMode {
                 return;
             }
 
-            SortedList<string, SpecialObject> local_focusable = focusable[focus_type];
+            Dictionary<string, SpecialObject> local_focusable = focusable[focus_type];
 
             if (extra_details == null) {
                 extra_details = "";
@@ -159,14 +191,14 @@ namespace AccessibleTiles.TrackingMode {
                     return;
                 }
                 int direction = button == this.cycleup ? -1 : 1;
-                key = local_focusable.IndexOfKey(focus_name) + direction;
+                key = local_focusable.Keys.ToList().IndexOf(focus_name) + direction;
             }
 
             if (key < 0 || key > local_focusable.Count - 1) {
                 //end of list
                 extra_details_end += "End of list, ";
             } else {
-                object focus = local_focusable.Values[(int)key];
+                object focus = local_focusable.Values.ElementAt((int)key);
                 focus_name = (focus as SpecialObject).name;
             }
 
@@ -193,7 +225,7 @@ namespace AccessibleTiles.TrackingMode {
                     return;
                 }
 
-                SortedList<string, SpecialObject> local_focusable = focusable[focus_type];
+                Dictionary<string, SpecialObject> local_focusable = focusable[focus_type];
 
                 if (!local_focusable.ContainsKey(focus_name)) {
                     this.ChangeFocus(null, 0, $"Can't find {focus_name}, ");

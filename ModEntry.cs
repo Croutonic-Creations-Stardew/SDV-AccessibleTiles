@@ -32,7 +32,7 @@ namespace AccessibleTiles {
 
         private Boolean grid_movement_active;
 
-        private ModConfig Config;
+        public ModConfig Config;
 
         public StardewAccessInterface? stardewAccess;
 
@@ -71,7 +71,7 @@ namespace AccessibleTiles {
             key_map.Add(SButton.DPadDown, 2);
             key_map.Add(SButton.DPadLeft, 3);
 
-            trackingMode = new Tracker(this, Config.TrackingModeRead, Config.TrackingModeCycleUp, Config.TrackingModeCycleDown, Config.TrackingModeGetTile);
+            trackingMode = new Tracker(this);
 
         }
 

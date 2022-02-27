@@ -222,7 +222,7 @@ namespace AccessibleTiles.TrackingMode {
 
         }
 
-        private static void AddObject(ref SortedList<string, SpecialObject> list, SpecialObject sObject) {
+        private static void AddObject(ref Dictionary<string, SpecialObject> list, SpecialObject sObject) {
             if (list.ContainsKey(sObject.name)) {
                 sObject = GetClosest(sObject, (SpecialObject)list[sObject.name]);
             }
@@ -230,11 +230,11 @@ namespace AccessibleTiles.TrackingMode {
             //return list;
         }
 
-        public static SortedList<string, SpecialObject> GetObjects(ModEntry mod) {
+        public static Dictionary<string, SpecialObject> GetObjects(ModEntry mod) {
 
             GameLocation location = Game1.currentLocation;
 
-            SortedList<string, SpecialObject> detected_objects = new();
+            Dictionary<string, SpecialObject> detected_objects = new();
             foreach (Vector2 position in location.objects.Keys) {
 
                 StardewValley.Object obj = location.objects[position];
@@ -331,8 +331,8 @@ namespace AccessibleTiles.TrackingMode {
             return detected_objects;
         }
 
-        public static SortedList<string, SpecialObject> GetResources(ModEntry mod) {
-            SortedList<string, SpecialObject> detected_objects = new();
+        public static Dictionary<string, SpecialObject> GetResources(ModEntry mod) {
+            Dictionary<string, SpecialObject> detected_objects = new();
             foreach (TerrainFeature feature in Game1.currentLocation.terrainFeatures.Values) {
                 if (feature is not HoeDirt) {
                     string name = mod.stardewAccess.GetNameAtTile(feature.currentTileLocation);
@@ -349,8 +349,8 @@ namespace AccessibleTiles.TrackingMode {
             return detected_objects;
         }
 
-        public static SortedList<string, SpecialObject> GetPlayers(ModEntry mod) {
-            SortedList<string, SpecialObject> detected_objects = new();
+        public static Dictionary<string, SpecialObject> GetPlayers(ModEntry mod) {
+            Dictionary<string, SpecialObject> detected_objects = new();
             if (Game1.IsMultiplayer && Game1.getOnlineFarmers().Count > 1) {
                 foreach (Farmer player in Game1.getOnlineFarmers()) {
                     SpecialObject sPlayer = new SpecialObject(player.displayName, player.getTileLocation());
@@ -365,8 +365,8 @@ namespace AccessibleTiles.TrackingMode {
             return detected_objects;
         }
 
-        public static SortedList<string, SpecialObject> GetCrops(ModEntry mod) {
-            SortedList<string, SpecialObject> detected_objects = new();
+        public static Dictionary<string, SpecialObject> GetCrops(ModEntry mod) {
+            Dictionary<string, SpecialObject> detected_objects = new();
             foreach (TerrainFeature feature in Game1.currentLocation.terrainFeatures.Values) {
                 if (feature is HoeDirt) {
                     HoeDirt dirt = (HoeDirt)feature;
@@ -397,10 +397,10 @@ namespace AccessibleTiles.TrackingMode {
             return detected_objects;
         }
 
-        public static SortedList<string, SpecialObject> GetBuildings() {
+        public static Dictionary<string, SpecialObject> GetBuildings() {
 
             GameLocation location = Game1.currentLocation;
-            SortedList<string, SpecialObject> detected_objects = new();
+            Dictionary<string, SpecialObject> detected_objects = new();
 
             if (location is Farm) {
 
@@ -464,8 +464,8 @@ namespace AccessibleTiles.TrackingMode {
 
         }
 
-        public static SortedList<string, SpecialObject> GetMining(ModEntry mod) {
-            SortedList<string, SpecialObject> detected_objects = new();
+        public static Dictionary<string, SpecialObject> GetMining(ModEntry mod) {
+            Dictionary<string, SpecialObject> detected_objects = new();
 
             if (Game1.currentLocation is not Mine or MineShaft && !Game1.currentLocation.Name.ToLower().Contains("undergroundmine")) return detected_objects;
 
@@ -507,11 +507,11 @@ namespace AccessibleTiles.TrackingMode {
             return detected_objects;
         }
 
-        public static SortedList<string, SpecialObject> GetResourceClumps(ModEntry mod) {
+        public static Dictionary<string, SpecialObject> GetResourceClumps(ModEntry mod) {
 
             GameLocation location = Game1.currentLocation;
 
-            SortedList<string, SpecialObject> detected_objects = new();
+            Dictionary<string, SpecialObject> detected_objects = new();
 
             List<object> types = new();
             types.Add(location.resourceClumps);
@@ -543,11 +543,11 @@ namespace AccessibleTiles.TrackingMode {
             return detected_objects;
         }
 
-        public static SortedList<string, SpecialObject> GetAnimals(ModEntry mod) {
+        public static Dictionary<string, SpecialObject> GetAnimals(ModEntry mod) {
 
             GameLocation location = Game1.currentLocation;
 
-            SortedList<string, SpecialObject> animals = new();
+            Dictionary<string, SpecialObject> animals = new();
 
             List<FarmAnimal>? farmAnimals = null;
 
@@ -574,10 +574,10 @@ namespace AccessibleTiles.TrackingMode {
             return animals;
         }
 
-        public static SortedList<string, SpecialObject> GetBundles() {
+        public static Dictionary<string, SpecialObject> GetBundles() {
 
             CommunityCenter communityCenter = (Game1.currentLocation as CommunityCenter);
-            SortedList<string, SpecialObject> bundles = new();
+            Dictionary<string, SpecialObject> bundles = new();
 
             if (communityCenter == null) return bundles;
 
@@ -590,11 +590,11 @@ namespace AccessibleTiles.TrackingMode {
             return bundles;
         }
 
-        public static SortedList<string, SpecialObject> GetCharacters() {
+        public static Dictionary<string, SpecialObject> GetCharacters() {
 
             GameLocation location = Game1.currentLocation;
 
-            SortedList<string, SpecialObject> characters = new();
+            Dictionary<string, SpecialObject> characters = new();
             foreach (NPC npc in location.getCharacters()) {
                 SpecialObject sObject = new SpecialObject(npc.displayName, npc.getTileLocation());
                 sObject.character = npc;
@@ -613,10 +613,10 @@ namespace AccessibleTiles.TrackingMode {
             return characters;
         }
 
-        public static SortedList<string, SpecialObject> GetDoors() {
+        public static Dictionary<string, SpecialObject> GetDoors() {
 
             GameLocation location = Game1.currentLocation;
-            SortedList<string, SpecialObject> points = new();
+            Dictionary<string, SpecialObject> points = new();
 
             if (TrackerUtility.inner_rooms.ContainsKey(location.Name)) {
                 foreach (((int, int) coords_raw, string name) in TrackerUtility.inner_rooms[location.Name]) {
@@ -636,10 +636,10 @@ namespace AccessibleTiles.TrackingMode {
 
         }
 
-        public static SortedList<string, SpecialObject> GetPOIs(ModEntry mod) {
+        public static Dictionary<string, SpecialObject> GetPOIs(ModEntry mod) {
 
             GameLocation location = Game1.currentLocation;
-            SortedList<string, SpecialObject> points = new();
+            Dictionary<string, SpecialObject> points = new();
 
             if (location.Name == "BeachNightMarket") {
                 AddObject(ref points, new("Outdoor Decorations Shop", new(55, 31)));
@@ -709,11 +709,11 @@ namespace AccessibleTiles.TrackingMode {
 
         }
 
-        public static SortedList<string, SpecialObject> GetEntrances(ModEntry mod) {
+        public static Dictionary<string, SpecialObject> GetEntrances(ModEntry mod) {
 
             GameLocation location = Game1.currentLocation;
 
-            SortedList<string, SpecialObject> doors = new();
+            Dictionary<string, SpecialObject> doors = new();
             Dictionary<string, int> added_names = new();
 
             foreach (Point point in location.doors.Keys) {
