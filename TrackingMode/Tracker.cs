@@ -290,11 +290,13 @@ namespace AccessibleTiles.TrackingMode {
                                 (focus.character as NPC).speed = 0;
                             }
 
+                            player.UsingTool = false;
                             player.controller = new PathFindController(player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1, (Character farmer, GameLocation location) => {
                                 direction = TrackerUtility.GetDirection(player.getTileLocation(), tile);
                                 ReadCurrentFocus(false, false, true);
                                 mod.movingWithTracker = false;
                                 Task ignore = UnhaltNPCS();
+                                player.canMove = true;
                             });
                             this.say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
                         } else {

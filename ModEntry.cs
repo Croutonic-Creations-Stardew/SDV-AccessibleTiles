@@ -94,7 +94,7 @@ namespace AccessibleTiles {
 
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e) {
 
-            if (key_map.ContainsKey(e.Button) || (Game1.activeClickableMenu != null && Game1.activeClickableMenu is not GameMenu)) {
+            if (key_map.ContainsKey(e.Button) && Game1.activeClickableMenu is not GameMenu) {
                 if (Game1.player.controller != null) {
                     ClearPathfindingController();
                 }
@@ -349,6 +349,7 @@ namespace AccessibleTiles {
             }
 
             if (movingWithTracker) {
+                Game1.player.UsingTool = false;
                 moved_for_ticks++;
 
                 if (moved_for_ticks > reset_on_tick_count) {
@@ -359,7 +360,6 @@ namespace AccessibleTiles {
                 }
             } else {
                 moved_for_ticks = 0;
-                movingWithTracker = false;
 
                 if (trackingMode.controlled_npcs.Any()) {
                     Task ignore = trackingMode.UnhaltNPCS();
