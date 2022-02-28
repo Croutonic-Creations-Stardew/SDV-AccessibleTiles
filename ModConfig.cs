@@ -3,7 +3,7 @@ using StardewModdingAPI.Utilities;
 
 namespace AccessibleTiles {
     /// <summary>The mod configuration model.</summary>
-    internal class ModConfig {
+    public class ModConfig {
         /*********
         ** Accessors
         *********/
@@ -31,6 +31,8 @@ namespace AccessibleTiles {
         public SButton TrackingModeCycleUp { get; set; } = SButton.PageUp;
         public SButton TrackingModeCycleDown { get; set; } = SButton.PageDown;
         public SButton TrackingModeGetTile { get; set; } = SButton.End;
+
+        public SButton TrackingToggleSortingMode { get; set; } = SButton.Scroll;
 
 
     }
