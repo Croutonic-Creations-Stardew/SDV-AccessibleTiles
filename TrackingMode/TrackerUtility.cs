@@ -45,7 +45,7 @@ namespace AccessibleTiles.TrackingMode {
                 "JojaMart",
                 new() {
                     { (10, 25), "Cashier Counter" },
-                    { (11, 18), "Joja Membership Counter" }
+                    { (21, 25), "Joja Membership Counter" }
                 }
             },
             {
@@ -74,9 +74,21 @@ namespace AccessibleTiles.TrackingMode {
                 }
             },
             {
+                "Saloon",
+                new() {
+                    { (14, 19), "Shop Counter" }
+                }
+            },
+            {
                 "ScienceHouse",
                 new() {
                     { (8, 19), "Shop Counter" }
+                }
+            },
+            {
+                "FishShop",
+                new() {
+                    { (5, 5), "Shop Counter" }
                 }
             },
             {
@@ -106,9 +118,10 @@ namespace AccessibleTiles.TrackingMode {
             {
                 "SeedShop",
                 new() {
-                    { (13, 12), "Abigail's Room" },
-                    { (14, 16), "Gathering room door" },
-                    { (20, 12), "Pierre and Caroline's Room" },
+                    { (14, 16), "Entrance to housing area" },
+                    { (13, 11), "Abigail's Room" },
+
+                    { (20, 11), "Pierre and Caroline's Room" },
                 }
             },
             {
