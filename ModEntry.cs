@@ -295,6 +295,10 @@ namespace AccessibleTiles {
                 Game1.playSound("woodyStep");
             }
 
+            if(back_index == 405) {
+                pass_feature_check = false;
+            }
+
             bool answer = !(!location.isTileOccupiedIgnoreFloors(tile_vector) &&
                 location.isTilePassable(new Location(X, Y), Game1.viewport) &&
                 !location.isWaterTile(X, Y) &&
@@ -305,7 +309,7 @@ namespace AccessibleTiles {
                 force_pass);
 
             //console.Debug(answer.ToString() + " - " + back_index.ToString());
-            console.Debug($"Check {X},{Y}");
+            console.Debug($"Check {X},{Y} (BackIndex: {back_index})");
 
             return answer;
         }

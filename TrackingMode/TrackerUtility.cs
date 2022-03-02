@@ -662,6 +662,8 @@ namespace AccessibleTiles.TrackingMode {
             GameLocation location = Game1.currentLocation;
             Dictionary<string, SpecialObject> points = new();
 
+            string day = Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth);
+
             if (location.Name == "BeachNightMarket") {
                 AddObject(ref points, new("Outdoor Decorations Shop", new(55, 31)));
                 AddObject(ref points, new("Coffee Vendor", new(14, 37)));
@@ -673,6 +675,11 @@ namespace AccessibleTiles.TrackingMode {
             if (location.Name == "ManorHouse") {
                 AddObject(ref points, new("Manage Funds", new(2, 5)));
                 AddObject(ref points, new("Marriage Log", new(3, 5)));
+            }
+            if (location is Forest) {
+                if (day == "Fri" || day == "Sun") {
+                    AddObject(ref points, new("Travelling Cart", new(27, 11)));
+                }
             }
             if (location is Submarine) {
                 AddObject(ref points, new("Captain", new(2, 9)));
