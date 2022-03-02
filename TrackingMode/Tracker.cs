@@ -143,7 +143,12 @@ namespace AccessibleTiles.TrackingMode {
             }
 
             if (e.Button == this.readtile) {
-                ReadCurrentFocus(true, false, false);
+                if (e.IsDown(SButton.LeftControl) || e.IsDown(SButton.RightControl)) {
+                    ReadCurrentFocus(true, true, false);
+                } else {
+                    ReadCurrentFocus(true, false, false);
+                }
+                
             }
 
             if (e.Button == this.cycleup || e.Button == this.cycledown) {
@@ -281,24 +286,35 @@ namespace AccessibleTiles.TrackingMode {
                         mod.console.Debug($"closest tile: {closest_tile}");
                         if (closest_tile != null) {
                             Vector2 tile = (Vector2)closest_tile;
-                            mod.movingWithTracker = true;
 
-                            if (focus.character != null) {
-                                mod.console.Debug("Freeze npc being travelled to");
-                                controlled_npcs.Add(focus.name, (focus.character, focus.character.speed));
+                            if (tileOnly) { //get directions
 
-                                (focus.character as NPC).speed = 0;
+                                mod.console.Debug("Get Directions to " + tile);
+                                string[] cardinal_directions = { };
+                                PathFindController controller = new PathFindController(player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1);
+
+                                Vector2 last_tile = player.getTileLocation();
+                                controller.pathToEndPoint.Pop(); //remove current tile
+                                foreach (Point p in controller.pathToEndPoint) {
+                                    Vector2 new_tile = new(p.X, p.Y);
+
+                                    cardinal_directions = cardinal_directions.Append(TrackerUtility.GetDirection(last_tile, new_tile)).ToArray();
+                                    last_tile = new_tile;
+                                }
+
+                                string directions = String.Join(" - ", TrackerUtility.get_directions(cardinal_directions));
+                                say($"{focus_name} at {directions}");
+                            } else {
+                                player.UsingTool = false;
+                                player.controller = new PathFindController(player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1, (Character farmer, GameLocation location) => {
+                                    direction = TrackerUtility.GetDirection(player.getTileLocation(), tile);
+                                    ReadCurrentFocus(false, false, true);
+                                    mod.movingWithTracker = false;
+                                    Task ignore = UnhaltNPCS();
+                                    player.canMove = true;
+                                });
+                                this.say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
                             }
-
-                            player.UsingTool = false;
-                            player.controller = new PathFindController(player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1, (Character farmer, GameLocation location) => {
-                                direction = TrackerUtility.GetDirection(player.getTileLocation(), tile);
-                                ReadCurrentFocus(false, false, true);
-                                mod.movingWithTracker = false;
-                                Task ignore = UnhaltNPCS();
-                                player.canMove = true;
-                            });
-                            this.say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
                         } else {
                             this.say($"Could not find path to {focus_name} at {tileXY.X}-{tileXY.Y}.", true);
                         }
@@ -309,7 +325,6 @@ namespace AccessibleTiles.TrackingMode {
                             this.say($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}", true);
                         }
                     }
-                    mod.console.Debug($"{focus_name} is {direction} {distance} tiles, at {tileXY.X}-{tileXY.Y}, player is at {position.X}-{position.Y}");
                 } else {
                     this.say(focus.unreachable_reason, true);
                     mod.console.Debug(focus.unreachable_reason);
@@ -318,6 +333,13 @@ namespace AccessibleTiles.TrackingMode {
 
             }
 
+        }
+
+        private void say(string text) {
+            if(mod.stardewAccess != null) {
+                mod.stardewAccess.Say(text, true);
+            }
+            mod.console.Debug(text);
         }
 
         public async Task UnhaltNPCS() {

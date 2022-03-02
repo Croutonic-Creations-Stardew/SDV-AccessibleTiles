@@ -32,7 +32,7 @@ namespace AccessibleTiles {
         public SButton TrackingModeCycleDown { get; set; } = SButton.PageDown;
         public SButton TrackingModeGetTile { get; set; } = SButton.End;
 
-        public SButton TrackingToggleSortingMode { get; set; } = SButton.Scroll;
+        public SButton TrackingToggleSortingMode { get; set; } = SButton.OemTilde;
 
 
     }

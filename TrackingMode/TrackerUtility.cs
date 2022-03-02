@@ -670,6 +670,10 @@ namespace AccessibleTiles.TrackingMode {
                 AddObject(ref points, new("Famous Painter", new(43, 34)));
                 AddObject(ref points, new("Random Shop", new(48, 34)));
             }
+            if (location.Name == "ManorHouse") {
+                AddObject(ref points, new("Manage Funds", new(2, 5)));
+                AddObject(ref points, new("Marriage Log", new(3, 5)));
+            }
             if (location is Submarine) {
                 AddObject(ref points, new("Captain", new(2, 9)));
             }
@@ -728,6 +732,28 @@ namespace AccessibleTiles.TrackingMode {
 
             return points;
 
+        }
+
+        public static List<string> get_directions(string[] map) {
+            List<string> directions = new();
+
+            int direction_count = 0;
+            string? last_direction = map[0];
+            for (int i = 0; i < map.Length; i++) {
+
+                string direction = map[i];
+
+                if (last_direction == direction) direction_count++;
+
+                if (last_direction != direction || i == map.Length - 1) {
+                    string units = direction_count > 1 ? "Tiles" : "Tile";
+                    directions.Add($"{direction_count} {units} {last_direction}");
+                    last_direction = direction;
+                    direction_count = 1;
+                }
+            }
+
+            return directions;
         }
 
         public static Dictionary<string, SpecialObject> GetEntrances(ModEntry mod) {
