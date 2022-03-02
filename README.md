@@ -18,7 +18,8 @@ Accessibility mod which seeks to make movement and tracking easier.
 - HOME - Read the direction, distance and tile location of the nearest focused object
 - END - Read the tile location of the nearest focused object
 - CTRL + HOME - Automatically walk near focused object
-- SCROLL LOCK to change tracker object sort type
+- CTRL + END - Get detailed directions on how to reach a focused object
+- Grave/Tilde to change tracker object sort type
 
 ### Tracking Utility Categories
 
