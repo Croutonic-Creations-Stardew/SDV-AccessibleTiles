@@ -44,7 +44,6 @@ namespace AccessibleTiles.TrackingMode {
             ScanArea(location, false);
         }
 
-
         public void ScanArea(GameLocation location, Boolean? clear_focus) {
 
             focusable.Clear();
@@ -71,6 +70,7 @@ namespace AccessibleTiles.TrackingMode {
                 clearFocus();
             }
         }
+        
         private void TrackCategory(string name, Dictionary<string, SpecialObject> objects) {
             if (objects.Count() > 0) {
                 focusable.Add(name, objects);
