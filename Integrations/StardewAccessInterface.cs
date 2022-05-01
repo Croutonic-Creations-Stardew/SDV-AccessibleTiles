@@ -14,7 +14,13 @@ namespace AccessibleTiles.Integrations {
         /// <param name="center">The starting point.</param>
         /// <param name="limit">The limiting factor or simply radius of the search area.</param>
         /// <returns>A dictionary with all the detected tiles along with the name of the object on it and it's category.</returns>
-        public Dictionary<Vector2, (string, string)> SearchNearbyTiles(Vector2 center, int limit);
+        public Dictionary<Vector2, (string name, string category)> SearchNearbyTiles(Vector2 center, int limit);
+
+        /// <summary>
+        /// Search the entire location using Breadth First Search algorithm(BFS).
+        /// </summary>
+        /// <returns>A dictionary with all the detected tiles along with the name of the object on it and it's category.</returns>
+        public Dictionary<Vector2, (string name, string category)> SearchLocation();
 
         /// <summary>
         /// Check the tile for any object

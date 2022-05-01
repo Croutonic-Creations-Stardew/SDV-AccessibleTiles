@@ -29,7 +29,7 @@ namespace AccessibleTiles.TrackingMode {
         private SButton readtile;
         private SButton sort_order_toggle;
 
-        public string[] categories = { "Mining", "Objects", "Crops", "Animals", "Entrances", "Characters", "Resource Clumps", "Bundles", "P O I", "Resources", "FarmBuildings" };
+        public List<string> categories = new();
 
         public Tracker(ModEntry mod) {
             this.mod = mod;
@@ -48,39 +48,28 @@ namespace AccessibleTiles.TrackingMode {
         public void ScanArea(GameLocation location, Boolean? clear_focus) {
 
             focusable.Clear();
+            categories = new();
+            Dictionary<Vector2, (string name, string category)> scannedTiles = mod.stardewAccess.SearchLocation();
+            // This method uses breadth first search so the first item is the closest item, no need to reorder or check for closest item
 
-            TrackCategory("FarmBuildings", TrackerUtility.GetBuildings());
-            TrackCategory("Objects", TrackerUtility.GetObjects(mod)); //utilizes on FarmBuildings sometimes
-            TrackCategory("Resource Clumps", TrackerUtility.GetResourceClumps(mod));
-            TrackCategory("Animals", TrackerUtility.GetAnimals(mod));
-            TrackCategory("Mining", TrackerUtility.GetMining(mod));
-            TrackCategory("Crops", TrackerUtility.GetCrops(mod));
-            TrackCategory("Resources", TrackerUtility.GetResources(mod));
-            TrackCategory("Bundles", TrackerUtility.GetBundles());
-            TrackCategory("Characters", TrackerUtility.GetCharacters());
-            TrackCategory("Entrances", TrackerUtility.GetEntrances(mod));
-            TrackCategory("P O I", TrackerUtility.GetPOIs(mod));
-            TrackCategory("Doors", TrackerUtility.GetDoors());
-            TrackCategory("Players", TrackerUtility.GetPlayers(mod));
+            foreach (var tile in scannedTiles)
+            {
+                if (!focusable.ContainsKey(tile.Value.category))
+                {
+                    focusable.Add(tile.Value.category, new());
+                    categories.Add(tile.Value.category);
+                }
 
-            if(focusable.Count() > 0 && sort_by_proxy) {
-                SortedList<string, Dictionary<string, SpecialObject>> tmp = new();
-                foreach (string key in focusable.Keys) {
-                    mod.console.Debug("Proxy...");
-                    tmp[key] = focusable[key].Values.OrderBy(v => TrackerUtility.GetDistance(Game1.player.getTileLocation(), v.TileLocation)).ToDictionary(x => x.name, x => x);
-                }
-                foreach(string key in tmp.Keys) {
-                    focusable[key] = tmp[key].Values.ToDictionary(x => x.name, x => x);
-                }
-                tmp.Clear();
+                SpecialObject sObject = new SpecialObject(tile.Value.name, tile.Key);
+
+                if (!focusable.GetValueOrDefault(tile.Value.category).ContainsKey(tile.Value.name))
+                    focusable.GetValueOrDefault(tile.Value.category).Add(tile.Value.name, sObject);
             }
-            
 
-            if (focus_name == null || focus_type == null || (bool)clear_focus) {
+            if (focus_name == null || focus_type == null || (bool)clear_focus)
+            {
                 clearFocus();
             }
-
-
         }
         private void TrackCategory(string name, Dictionary<string, SpecialObject> objects) {
             if (objects.Count() > 0) {
