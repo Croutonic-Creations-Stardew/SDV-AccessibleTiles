@@ -96,13 +96,19 @@ namespace AccessibleTiles.TrackingMode {
 
         public void clearFocus() {
             foreach (string cat in categories) {
-                if (focusable.ContainsKey(cat)) {
+                if (focusable.ContainsKey(cat))
+                {
                     focus_type = cat;
-                    object focus = focusable[focus_type].Values.First();
-                    focus_name = (focus as SpecialObject).name;
+                    this.focusFirstItemOfCurrentlyFocusedCategory();
                     return;
                 }
             }
+        }
+
+        private void focusFirstItemOfCurrentlyFocusedCategory()
+        {
+            object focus = focusable[focus_type].Values.First();
+            focus_name = (focus as SpecialObject).name;
         }
 
         private void say(string text, bool force) {
@@ -176,7 +182,7 @@ namespace AccessibleTiles.TrackingMode {
                         // Refresh the list
                         mod.console.Debug("Refreshing...");
                         this.ScanArea(Game1.currentLocation);
-                        this.clearFocus();
+                        this.focusFirstItemOfCurrentlyFocusedCategory();
 
                         this.say($"Sorting by Name, {focus_name} focused", true);
                         mod.console.Debug($"Focused on {focus_name}");
@@ -187,7 +193,7 @@ namespace AccessibleTiles.TrackingMode {
                         // Refresh the list
                         mod.console.Debug("Refreshing...");
                         this.ScanArea(Game1.currentLocation);
-                        this.clearFocus();
+                        this.focusFirstItemOfCurrentlyFocusedCategory();
 
                         this.say($"Sorting by Proximity, {focus_name} focuse", true);
                         mod.console.Debug($"Focused on {focus_name}");
