@@ -49,8 +49,11 @@ namespace AccessibleTiles.TrackingMode {
             focusable.Clear();
             categories = new();
             Dictionary<Vector2, (string name, string category)> scannedTiles = mod.stardewAccess.SearchLocation();
-            // This method uses breadth first search so the first item is the closest item, no need to reorder or check for closest item
 
+            /* Categorise the scanned tiles into groups
+             *
+             * This method uses breadth first search so the first item is the closest item, no need to reorder or check for closest item
+             */
             foreach (var tile in scannedTiles)
             {
                 if (!focusable.ContainsKey(tile.Value.category))
@@ -63,6 +66,20 @@ namespace AccessibleTiles.TrackingMode {
 
                 if (!focusable.GetValueOrDefault(tile.Value.category).ContainsKey(tile.Value.name))
                     focusable.GetValueOrDefault(tile.Value.category).Add(tile.Value.name, sObject);
+            }
+
+            // Sort each category by name if sort by proxy is disabled
+            if(!sort_by_proxy)
+            {
+                foreach (var cat in focusable)
+                {
+                    var ordered = cat.Value.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+                    cat.Value.Clear();
+                    foreach(var item in ordered)
+                    {
+                        cat.Value.Add(item.Key, item.Value);
+                    }
+                }
             }
 
             if (focus_name == null || focus_type == null || (bool)clear_focus)
@@ -155,10 +172,26 @@ namespace AccessibleTiles.TrackingMode {
                 foreach (string key in focusable.Keys) {
                     if (prev_proxy == true) {
                         sort_by_proxy = false;
-                        this.say("Sorting by Name", true);
+
+                        // Refresh the list
+                        mod.console.Debug("Refreshing...");
+                        this.ScanArea(Game1.currentLocation);
+                        this.clearFocus();
+
+                        this.say($"Sorting by Name, {focus_name} focused", true);
+                        mod.console.Debug($"Focused on {focus_name}");
+                        break;
                     } else {
                         sort_by_proxy = true;
-                        this.say("Sorting by Proximity", true);
+
+                        // Refresh the list
+                        mod.console.Debug("Refreshing...");
+                        this.ScanArea(Game1.currentLocation);
+                        this.clearFocus();
+
+                        this.say($"Sorting by Proximity, {focus_name} focuse", true);
+                        mod.console.Debug($"Focused on {focus_name}");
+                        break;
                     }
                 }
                 mod.console.Debug("Proxy Sort: " + sort_by_proxy.ToString());
