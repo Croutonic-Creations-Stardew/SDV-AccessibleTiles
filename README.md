@@ -45,7 +45,7 @@ Any given category will only be selectable if there are objects that fit into th
 - By Proximity (closest first)
 
 # Get The Mod
-The latest version of the mod can always be found at [GrumpyCrouton.com](https://stardew.grumpycrouton.com)
+The latest version of the mod can always be found at [GrumpyCrouton.com](https://a4a-mods.com/mods/details?uid=10)
 
 ## JAWS Support			
 If you plan to use JAWS while playing with grid movement keys assigned to the arrow keys, you will need to apply the JAWS Passthrough Settings file found [here](https://stardew.grumpycrouton.com/releases/StardewModdingAPI.jkm)
