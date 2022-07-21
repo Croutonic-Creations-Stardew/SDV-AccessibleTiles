@@ -6,6 +6,7 @@ using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
@@ -447,26 +448,37 @@ namespace AccessibleTiles.TrackingMode {
             double? closest_tile_distance = null;
             double? closest_tile_distance_to_object = null;
 
-            for (int i = 0; i <= radius * radius; i++) {
+            //store the locations currently being checked
+            Dictionary<string, Vector2> checks = new Dictionary<string, Vector2>();
 
-                Vector2 tile = new(currentX, currentY);
+            //first, check the spot directly next to the object, closest to where the player is standing
+            //to add more checks, increase i in the for loop below and add another branch to the first if statement
+            checks.Add("top", Vector2.Add(topLeft, new(1, 0)));
+            checks.Add("right", Vector2.Add(topLeft, new(2, 1)));
+            checks.Add("bottom", Vector2.Add(topLeft, new(1, 2)));
+            checks.Add("left", Vector2.Add(topLeft, new(0, 1)));
 
-                //mod.console.Debug($"{i}) {tile}");
-                if (currentX == tileXY.X && currentY == tileXY.Y) {
-                    currentX++;
-                    continue;
+            for (int i = 0; i <= 1; i++) {
+
+                if(i == 1) {
+                    //scan corners, no good location for direct contact
+                    checks.Clear();
+
+                    checks.Add("topLeft", topLeft);
+                    checks.Add("topRight", Vector2.Add(bottomRight, new(2, 0)));
+                    checks.Add("bottomRight", bottomRight);
+                    checks.Add("bottomLeft", Vector2.Add(topLeft, new(0, 2)));
+                    
                 }
 
-                //mod.console.Debug($"Check Tile: {tile}");
-
-                if (!mod.IsColliding(tile)) {
+                foreach (var (qualifier, tile) in checks) {
 
                     PathFindController controller = new PathFindController(Game1.player, Game1.currentLocation, new Point((int)tile.X, (int)tile.Y), -1, eraseOldPathController: true);
 
                     if (controller.pathToEndPoint != null) {
 
                         int tile_distance = controller.pathToEndPoint.Count();
-                        double distance_to_object = TrackerUtility.GetDistance(tileXY, tile);
+                        double distance_to_object = TrackerUtility.GetDistance(tileXY, Game1.player.getTileLocation());
 
                         if (closest_tile_distance == null) {
                             closest_tile = tile;
@@ -489,15 +501,13 @@ namespace AccessibleTiles.TrackingMode {
                     }
                 }
 
-                currentX++;
-
-                if (currentX > bottomRight.X) {
-                    currentX = topLeft.X;
-                    currentY++;
+                if (closest_tile != null) {
+                    return closest_tile;
                 }
+
             }
 
-            return closest_tile;
+            return null;
         }
     }
 
