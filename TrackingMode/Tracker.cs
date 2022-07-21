@@ -136,7 +136,11 @@ namespace AccessibleTiles.TrackingMode {
             } else if (location is SeedShop) {
                 AddFocusableObject(category, "Vegetable Bin", new(19, 28));
             } else if (location is Beach) {
+                if(location.currentEvent != null && location.currentEvent.playerControlTargetTile == new Point(53, 8)) {
+                    AddFocusableObject(category, "Haley's Bracelet", new(53, 8));
+                }
                 AddFocusableObject(category, "Willy's Barrel", new(37, 33));
+                
             }
 
             if (!focusable[category].Any() == true) {
