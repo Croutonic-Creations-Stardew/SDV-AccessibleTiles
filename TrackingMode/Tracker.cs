@@ -5,9 +5,7 @@ using StardewValley;
 using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
@@ -54,50 +52,84 @@ namespace AccessibleTiles.TrackingMode {
              *
              * This method uses breadth first search so the first item is the closest item, no need to reorder or check for closest item
              */
-            foreach (var tile in scannedTiles)
-            {
-                if (!focusable.ContainsKey(tile.Value.category))
-                {
-                    focusable.Add(tile.Value.category, new());
-                    categories.Add(tile.Value.category);
-                }
-
-                SpecialObject sObject = new SpecialObject(tile.Value.name, tile.Key);
-
-                if (!focusable.GetValueOrDefault(tile.Value.category).ContainsKey(tile.Value.name))
-                    focusable.GetValueOrDefault(tile.Value.category).Add(tile.Value.name, sObject);
+            foreach (var tile in scannedTiles) {
+                AddFocusableObject(tile.Value.category, tile.Value.name, tile.Key);
             }
 
+            this.AddSpecialPoints(location);
+
             // Sort each category by name if sort by proxy is disabled
-            if(!sort_by_proxy)
-            {
-                foreach (var cat in focusable)
-                {
+            if (!sort_by_proxy) {
+                foreach (var cat in focusable) {
                     var ordered = cat.Value.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
                     cat.Value.Clear();
-                    foreach(var item in ordered)
-                    {
+                    foreach (var item in ordered) {
                         cat.Value.Add(item.Key, item.Value);
                     }
                 }
             }
 
-            if (focus_name == null || focus_type == null || (bool)clear_focus)
-            {
+            if (focus_name == null || focus_type == null || (bool)clear_focus) {
                 clearFocus();
             }
         }
-        
-        private void TrackCategory(string name, Dictionary<string, SpecialObject> objects) {
-            if (objects.Count() > 0) {
-                focusable.Add(name, objects);
+
+        private void AddFocusableObject(string category, string name, Vector2 tile) {
+
+            if (!focusable.ContainsKey(category)) {
+                focusable.Add(category, new());
+                categories.Add(category);
             }
+
+            SpecialObject sObject = new SpecialObject(name, tile);
+
+            if (!focusable.GetValueOrDefault(category).ContainsKey(name))
+                focusable.GetValueOrDefault(category).Add(name, sObject);
+
+        }
+
+        private void AddSpecialPoints(GameLocation location) {
+
+            string category = "special";
+
+            if (!focusable.ContainsKey(category)) {
+                focusable.Add(category, new());
+                categories.Add(category);
+            }
+
+            if (location.Name == "Saloon") {
+                AddFocusableObject(category, "Gus's Fridge", new(18, 16));
+            } else if (location.Name == "ScienceHouse") {
+                AddFocusableObject(category, "Robin's Woodpile", new(11, 19));
+            } else if (location.Name == "ArchaeologyHouse") {
+                AddFocusableObject(category, "Box for Bone Fragments", new(6, 9));
+            } else if (location.Name == "JoshHouse") {
+                AddFocusableObject(category, "Evelyn's Stove", new(3, 16));
+            } else if (location.Name == "Tunnel") {
+                AddFocusableObject(category, "Lock Box", new(17, 6));
+            } else if (location is Town) {
+                if (Game1.player.hasQuest(31) && !Game1.player.hasMagnifyingGlass) {
+                    AddFocusableObject(category, "Shadow Guy's Hiding Bush", new(28, 13));
+                }
+                AddFocusableObject(category, "Empty Rainbow Shell Crate", new(45, 40));
+            } else if (location is Railroad) {
+                AddFocusableObject(category, "Recycle Bin", new(28, 36));
+                AddFocusableObject(category, "Empty Rainbow Shell Crate", new(45, 40));
+            } else if (location is SeedShop) {
+                AddFocusableObject(category, "Vegetable Bin", new(19, 28));
+            } else if (location is Beach) {
+                AddFocusableObject(category, "Willy's Barrel", new(37, 33));
+            }
+
+            if (!focusable[category].Any() == true) {
+                focusable.Remove(category);
+            }
+
         }
 
         public void clearFocus() {
             foreach (string cat in categories) {
-                if (focusable.ContainsKey(cat))
-                {
+                if (focusable.ContainsKey(cat)) {
                     focus_type = cat;
                     this.focusFirstItemOfCurrentlyFocusedCategory();
                     return;
@@ -105,14 +137,13 @@ namespace AccessibleTiles.TrackingMode {
             }
         }
 
-        private void focusFirstItemOfCurrentlyFocusedCategory()
-        {
+        private void focusFirstItemOfCurrentlyFocusedCategory() {
             object focus = focusable[focus_type].Values.First();
             focus_name = (focus as SpecialObject).name;
         }
 
         private void say(string text, bool force) {
-            if(mod.stardewAccess != null) {
+            if (mod.stardewAccess != null) {
                 mod.stardewAccess.Say(text, force);
             }
         }
@@ -160,7 +191,7 @@ namespace AccessibleTiles.TrackingMode {
                 } else {
                     ReadCurrentFocus(true, false, false);
                 }
-                
+
             }
 
             if (e.Button == this.cycleup || e.Button == this.cycledown) {
@@ -172,7 +203,7 @@ namespace AccessibleTiles.TrackingMode {
 
             }
 
-            if(e.Button == this.sort_order_toggle) {
+            if (e.Button == this.sort_order_toggle) {
                 mod.console.Debug("Change Sorting... " + sort_by_proxy);
                 bool prev_proxy = sort_by_proxy;
                 foreach (string key in focusable.Keys) {
@@ -364,7 +395,7 @@ namespace AccessibleTiles.TrackingMode {
         }
 
         private void say(string text) {
-            if(mod.stardewAccess != null) {
+            if (mod.stardewAccess != null) {
                 mod.stardewAccess.Say(text, true);
             }
             mod.console.Debug(text);

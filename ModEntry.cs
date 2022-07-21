@@ -211,12 +211,21 @@ namespace AccessibleTiles {
                 hasCheckedBed = false;
             } else {
 
-                //check if player is trying to warp
+                //Game1.currentLocation.performAction(new string { "LockedDoorWarp", null, null,  }, Game1.player, new Location(X, Y));
+
+                //Point warpPointTarget = location.getWarpPointTarget(new Point(X, Y));
+
                 Warp warp = location.isCollidingWithWarpOrDoor(new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Game1.tileSize, Game1.tileSize));
                 if (warp != null) {
-                    Game1.playSound("doorClose");
-                    Game1.player.warpFarmer(warp);
-                    this.is_warping = true;
+
+                    if (location.checkAction(new Location((int)X, (int)Y), Game1.viewport, Game1.player)) {
+                        this.is_warping = true;
+                    } else {
+                        Game1.playSound("doorClose");
+                        Game1.player.warpFarmer(warp);
+                        this.is_warping = true;
+                    }
+
                 }
 
                 //check if player is trying to collide with an object
@@ -224,6 +233,8 @@ namespace AccessibleTiles {
 
                     StardewValley.Object obj = Game1.currentLocation.getObjectAtTile(X, Y);
                     String object_name = obj.DisplayName;
+
+                    console.Debug($"Check Object: {object_name}");
 
                     if (object_name.ToLower().Contains("bed")) {
                         if (hasCheckedBed == false) {
@@ -290,13 +301,24 @@ namespace AccessibleTiles {
             string passable = location.doesTileHaveProperty(X, Y, "Passable", "Back");
             //console.Debug();
 
-            if (back_index == 107 || back_index == 362 || back_index == 1274 || back_index == 1244) {
+            if ((new[] { 107, 362, 1274, 1244, 737, 999, 963, 931, 609 }).Contains(back_index)) {
                 force_pass = true;
                 Game1.playSound("woodyStep");
             }
 
-            if(back_index == 405) {
+            if((new[] { 405, 74, 75 }).Contains(back_index)) {
                 pass_feature_check = false;
+            }
+
+            if(location is IslandSouth) {
+                if(!(location as IslandSouth).westernTurtleMoved) {
+                    if(X == 3) {
+                        if(Enumerable.Range(10, 13).Contains(Y)) {
+                            stardewAccess.Say("Path is blocked by a giant turtle!", true);
+                            pass_feature_check = false;
+                        }
+                    }
+                }
             }
 
             bool answer = !(!location.isTileOccupiedIgnoreFloors(tile_vector) &&
@@ -309,7 +331,7 @@ namespace AccessibleTiles {
                 force_pass);
 
             //console.Debug(answer.ToString() + " - " + back_index.ToString());
-            console.Debug($"Check {X},{Y} (BackIndex: {back_index})");
+            console.Debug($"Check {X},{Y} (BackIndex: {back_index}) | (Passable: {passable} | (Answer: {answer})");
 
             return answer;
         }
@@ -382,6 +404,10 @@ namespace AccessibleTiles {
 
             if (!Context.IsWorldReady)
                 return;
+
+            if(Game1.player.CanMove || Game1.activeClickableMenu == null) {
+                this.is_warping = false;
+            }
 
             /*if(movingWithTracker) {
                 console.Debug("Play sound");

@@ -1,15 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Netcode;
-using StardewModdingAPI;
-using StardewValley;
-using StardewValley.Buildings;
-using StardewValley.Locations;
-using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using xTile;
-using Object = StardewValley.Object;
 
 namespace AccessibleTiles.TrackingMode {
     internal static class TrackerUtility {
@@ -30,7 +21,7 @@ namespace AccessibleTiles.TrackingMode {
             { Direction.Southeast, "Southeast" },
             { Direction.Southwest, "Southwest" }
         };
-        
+
         public static double GetDistance(Vector2 player, Vector2 point) {
             return Math.Sqrt(Math.Pow(((double)point.X - (double)player.X), 2) + Math.Pow(((double)point.Y - (double)player.Y), 2));
         }
