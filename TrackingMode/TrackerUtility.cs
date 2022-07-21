@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using StardewValley;
 using System;
 using System.Collections.Generic;
 
@@ -73,6 +74,84 @@ namespace AccessibleTiles.TrackingMode {
             }
 
             return directions;
+        }
+
+        public static Dictionary<string, SpecialObject> GetEntrances(ModEntry mod) {
+
+            GameLocation location = Game1.currentLocation;
+
+            Dictionary<string, SpecialObject> doors = new();
+            Dictionary<string, int> added_names = new();
+
+            foreach (Point point in location.doors.Keys) {
+                string str = location.doors[point];
+
+                if (added_names.ContainsKey(str)) {
+                    added_names[str]++;
+                    str += $" {added_names[str]}";
+                } else {
+                    added_names.Add(str, 1);
+                }
+
+                doors[str] = new SpecialObject(str, new(point.X, point.Y), new(point.X, point.Y + 1));
+            }
+
+            foreach (Warp point in location.warps) {
+                string str = point.TargetName;
+                if (str.ToLower() == "desert") continue;
+
+                if (added_names.ContainsKey(str)) {
+
+                    //make sure this warp is not directly next to an existing one
+
+                    bool add = true;
+
+                    int number = added_names[str];
+
+                    string name = str;
+                    if (number > 1) {
+                        name += $" {number}";
+                    }
+                    SpecialObject previous_warp = doors[name];
+
+                    if (mod.IsColliding(new(point.X, point.Y))) {
+                        add = false;
+                    }
+
+                    for (int i = -5; i < 5; i++) {
+                        if (add) {
+                            if (previous_warp.TileLocation.X == point.X && previous_warp.TileLocation.Y == point.Y + i) {
+                                add = false;
+                            }
+                            if (previous_warp.TileLocation.Y == point.Y && previous_warp.TileLocation.X == point.X + i) {
+                                add = false;
+                            }
+                        }
+                    }
+
+                    if (add) {
+                        added_names[str]++;
+                        str += $" {added_names[str]}";
+                        doors[str] = new SpecialObject(str, new(point.X, point.Y));
+                    }
+
+                } else {
+                    added_names.Add(str, 1);
+                    doors[str] = new SpecialObject(str, new(point.X, point.Y));
+                }
+
+                if (str.ToLower().Contains("sunroom")) {
+
+                    Vector2 pathfind_override = doors[str].TileLocation;
+                    pathfind_override.Y += 1;
+
+                    doors[str].PathfindingOverride = pathfind_override;
+                }
+
+
+            }
+
+            return doors;
         }
     }
 }

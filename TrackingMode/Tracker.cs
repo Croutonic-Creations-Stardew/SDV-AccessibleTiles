@@ -57,6 +57,7 @@ namespace AccessibleTiles.TrackingMode {
             }
 
             this.AddSpecialPoints(location);
+            this.AddEntrances(location);
 
             // Sort each category by name if sort by proxy is disabled
             if (!sort_by_proxy) {
@@ -88,14 +89,31 @@ namespace AccessibleTiles.TrackingMode {
 
         }
 
+        private void AddEntrances(GameLocation location) {
+
+            string category = "entrances";
+
+            focusable.Add(category, new());
+            categories.Add(category);
+
+            Dictionary<string, SpecialObject> entrances = TrackerUtility.GetEntrances(this.mod);
+            
+            foreach(var(name, sObject) in entrances) {
+                AddFocusableObject(category, name, sObject.TileLocation);
+            }
+
+            if (!focusable[category].Any() == true) {
+                focusable.Remove(category);
+            }
+
+        }
+
         private void AddSpecialPoints(GameLocation location) {
 
             string category = "special";
 
-            if (!focusable.ContainsKey(category)) {
-                focusable.Add(category, new());
-                categories.Add(category);
-            }
+            focusable.Add(category, new());
+            categories.Add(category);
 
             if (location.Name == "Saloon") {
                 AddFocusableObject(category, "Gus's Fridge", new(18, 16));
