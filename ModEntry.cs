@@ -380,7 +380,8 @@ namespace AccessibleTiles {
 
                 if (moved_for_ticks > reset_on_tick_count) {
                     if(Game1.activeClickableMenu == null) {
-                        Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation(), Game1.player);
+                        console.Debug("play terrain sound");
+                        Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation());
                     }
                     moved_for_ticks = 0;
                 }
@@ -408,11 +409,6 @@ namespace AccessibleTiles {
             if(Game1.player.CanMove || Game1.activeClickableMenu == null) {
                 this.is_warping = false;
             }
-
-            /*if(movingWithTracker) {
-                console.Debug("Play sound");
-                Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation(), Game1.player);
-            }*/
 
         }
 

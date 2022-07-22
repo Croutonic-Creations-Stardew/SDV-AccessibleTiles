@@ -397,6 +397,7 @@ namespace AccessibleTiles.TrackingMode {
                                     mod.Helper.ConsoleCommands.Trigger("debug", arguments: new string[] { "cm" });
                                 });
                                 this.say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
+                                mod.movingWithTracker = true;
                             }
                         } else {
                             this.say($"Could not find path to {focus_name} at {tileXY.X}-{tileXY.Y}.", true);
