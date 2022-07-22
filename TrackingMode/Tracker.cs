@@ -394,6 +394,7 @@ namespace AccessibleTiles.TrackingMode {
                                     mod.movingWithTracker = false;
                                     Task ignore = UnhaltNPCS();
                                     player.canMove = true;
+                                    mod.Helper.ConsoleCommands.Trigger("debug", arguments: new string[] { "cm" });
                                 });
                                 this.say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
                             }
@@ -440,9 +441,6 @@ namespace AccessibleTiles.TrackingMode {
 
             Vector2 topLeft = new(tileXY.X - layers, tileXY.Y - layers);
             Vector2 bottomRight = new(tileXY.X + layers, tileXY.Y + layers);
-
-            float currentX = topLeft.X;
-            float currentY = topLeft.Y;
 
             Vector2? closest_tile = null;
             double? closest_tile_distance = null;
