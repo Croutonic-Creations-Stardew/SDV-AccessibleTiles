@@ -130,7 +130,6 @@ namespace AccessibleTiles.TrackingMode {
                 if (Game1.player.hasQuest(31) && !Game1.player.hasMagnifyingGlass) {
                     AddFocusableObject(category, "Shadow Guy's Hiding Bush", new(28, 13));
                 }
-                AddFocusableObject(category, "Empty Rainbow Shell Crate", new(45, 40));
             } else if (location is Railroad) {
                 AddFocusableObject(category, "Recycle Bin", new(28, 36));
                 AddFocusableObject(category, "Empty Rainbow Shell Crate", new(45, 40));

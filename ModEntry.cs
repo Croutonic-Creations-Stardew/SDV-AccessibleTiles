@@ -380,7 +380,6 @@ namespace AccessibleTiles {
 
                 if (moved_for_ticks > reset_on_tick_count) {
                     if(Game1.activeClickableMenu == null) {
-                        console.Debug("play terrain sound");
                         Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation());
                     }
                     moved_for_ticks = 0;
