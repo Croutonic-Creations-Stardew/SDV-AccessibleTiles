@@ -2,6 +2,7 @@
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AccessibleTiles.TrackingMode {
     internal static class TrackerUtility {
@@ -37,6 +38,33 @@ namespace AccessibleTiles.TrackingMode {
             } else {
                 return null;
             }
+        }
+
+        public static Dictionary<string, SpecialObject> GetAnimals(ModEntry mod, GameLocation location) {
+
+            Dictionary<string, SpecialObject> animals = new();
+
+            List<FarmAnimal>? farmAnimals = null;
+
+            if (location is Farm)
+                farmAnimals = (location as Farm).getAllFarmAnimals();
+            else if (location is AnimalHouse)
+                farmAnimals = (location as AnimalHouse).animals.Values.ToList();
+
+            if (farmAnimals != null) {
+                foreach (FarmAnimal animal in farmAnimals) {
+                    string mood = animal.getMoodMessage();
+                    string mood_text = "";
+                    if (mood.ToLower().Contains("thin")) {
+                        mood_text = " the Hungry ";
+                    }
+
+                    SpecialObject sObject = new SpecialObject($"{animal.displayName} {mood_text}{animal.shortDisplayType()}", animal.getTileLocation());
+                    animals.Add(sObject.name, sObject);
+                }
+            }
+
+            return animals;
         }
 
         public static string GetDirection(Vector2 start, Vector2 end) {

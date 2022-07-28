@@ -55,9 +55,14 @@ namespace AccessibleTiles.TrackingMode {
              * This method uses breadth first search so the first item is the closest item, no need to reorder or check for closest item
              */
             foreach (var tile in scannedTiles) {
+
+                //ignore some of stardew access categories
+                if (tile.Value.category == "animal") continue;
+
                 AddFocusableObject(tile.Value.category, tile.Value.name, tile.Key);
             }
 
+            this.AddAnimals(location);
             this.AddSpecialPoints(location);
             this.AddEntrances(location);
 
@@ -101,6 +106,25 @@ namespace AccessibleTiles.TrackingMode {
             Dictionary<string, SpecialObject> entrances = TrackerUtility.GetEntrances(this.mod);
             
             foreach(var(name, sObject) in entrances) {
+                AddFocusableObject(category, name, sObject.TileLocation);
+            }
+
+            if (!focusable[category].Any() == true) {
+                focusable.Remove(category);
+            }
+
+        }
+
+        private void AddAnimals(GameLocation location) {
+
+            string category = "animal";
+
+            focusable.Add(category, new());
+            categories.Add(category);
+
+            Dictionary<string, SpecialObject> animals = TrackerUtility.GetAnimals(this.mod, location);
+
+            foreach (var (name, sObject) in animals) {
                 AddFocusableObject(category, name, sObject.TileLocation);
             }
 
