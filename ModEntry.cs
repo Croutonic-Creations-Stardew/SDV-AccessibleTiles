@@ -104,6 +104,9 @@ namespace AccessibleTiles {
             if (!Context.IsWorldReady || Game1.activeClickableMenu != null || !Game1.player.CanMove)
                 return;
 
+            // print button presses to the console window
+            //this.Monitor.Log($"{Game1.player.Name} pressed {e.Button}.", LogLevel.Debug);
+
             int direction = -1;
 
             if (key_map.ContainsKey(e.Button)) {
