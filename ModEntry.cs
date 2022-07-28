@@ -104,9 +104,6 @@ namespace AccessibleTiles {
             if (!Context.IsWorldReady || Game1.activeClickableMenu != null || !Game1.player.CanMove)
                 return;
 
-            // print button presses to the console window
-            //this.Monitor.Log($"{Game1.player.Name} pressed {e.Button}.", LogLevel.Debug);
-
             int direction = -1;
 
             if (key_map.ContainsKey(e.Button)) {
@@ -306,14 +303,14 @@ namespace AccessibleTiles {
                 Game1.playSound("woodyStep");
             }
 
-            if((new[] { 405, 74, 75 }).Contains(back_index)) {
+            if ((new[] { 405, 74, 75 }).Contains(back_index)) {
                 pass_feature_check = false;
             }
 
-            if(location is IslandSouth) {
-                if(!(location as IslandSouth).westernTurtleMoved) {
-                    if(X == 3) {
-                        if(Enumerable.Range(10, 13).Contains(Y)) {
+            if (location is IslandSouth) {
+                if (!(location as IslandSouth).westernTurtleMoved) {
+                    if (X == 3) {
+                        if (Enumerable.Range(10, 13).Contains(Y)) {
                             stardewAccess.Say("Path is blocked by a giant turtle!", true);
                             pass_feature_check = false;
                         }
@@ -379,7 +376,7 @@ namespace AccessibleTiles {
                 moved_for_ticks++;
 
                 if (moved_for_ticks > reset_on_tick_count) {
-                    if(Game1.activeClickableMenu == null) {
+                    if (Game1.activeClickableMenu == null) {
                         Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation());
                     }
                     moved_for_ticks = 0;
@@ -405,7 +402,7 @@ namespace AccessibleTiles {
             if (!Context.IsWorldReady)
                 return;
 
-            if(Game1.player.CanMove || Game1.activeClickableMenu == null) {
+            if (Game1.player.CanMove || Game1.activeClickableMenu == null) {
                 this.is_warping = false;
             }
 
