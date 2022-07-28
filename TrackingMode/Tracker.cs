@@ -136,7 +136,11 @@ namespace AccessibleTiles.TrackingMode {
             } else if (location.Name == "SandyHouse") {
                 AddFocusableObject(category, "Shop Counter", new(2, 6));
                 AddFocusableObject(category, "Casino Entrance", new(17, 1));
-            } else if (location is Town) {
+            } else if (location.Name == "SkullCave") {
+                AddFocusableObject(category, "Skull Cavern Entrance", new(3, 3));
+            } 
+            
+            else if (location is Town) {
                 if (Game1.player.hasQuest(31) && !Game1.player.hasMagnifyingGlass) {
                     AddFocusableObject(category, "Shadow Guy's Hiding Bush", new(28, 13));
                 }
