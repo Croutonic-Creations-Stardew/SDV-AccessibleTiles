@@ -118,6 +118,7 @@ namespace AccessibleTiles.TrackingMode {
             categories.Add(category);
 
             if (location.Name == "Saloon") {
+
                 AddFocusableObject(category, "Gus's Fridge", new(18, 16));
             } else if (location.Name == "ScienceHouse") {
                 AddFocusableObject(category, "Robin's Woodpile", new(11, 19));
@@ -132,6 +133,9 @@ namespace AccessibleTiles.TrackingMode {
             } else if (location.Name == "WitchSwamp") {
                 AddFocusableObject(category, "Teleportation Rune", new(20, 42));
                 AddFocusableObject(category, "WitchHut", new(20, 20));
+            } else if (location.Name == "SandyHouse") {
+                AddFocusableObject(category, "Shop Counter", new(2, 6));
+                AddFocusableObject(category, "Casino Entrance", new(17, 1));
             } else if (location is Town) {
                 if (Game1.player.hasQuest(31) && !Game1.player.hasMagnifyingGlass) {
                     AddFocusableObject(category, "Shadow Guy's Hiding Bush", new(28, 13));
