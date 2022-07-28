@@ -138,6 +138,16 @@ namespace AccessibleTiles.TrackingMode {
                 AddFocusableObject(category, "Casino Entrance", new(17, 1));
             } else if (location.Name == "SkullCave") {
                 AddFocusableObject(category, "Skull Cavern Entrance", new(3, 3));
+            } else if (location.Name == "WitchHut") {
+                AddFocusableObject(category, "Dark Shrine of Memory", new(7, 5));
+                AddFocusableObject(category, "Dark Shrine of Night Terrors", new(12, 6));
+                AddFocusableObject(category, "Dark Shrine of Selfishness", new(2, 6));
+                AddFocusableObject(category, "Teleportation Rune (Wizard's Basement)", new(11, 11));
+
+                //must have the magic ink quest
+                if(Game1.player.hasQuest(28)) {
+                    AddFocusableObject(category, "Magic Ink Location", new(4, 12));
+                }
             } 
             
             else if (location is Town) {
@@ -160,7 +170,6 @@ namespace AccessibleTiles.TrackingMode {
                     AddFocusableObject(category, "Haley's Bracelet", new(53, 8));
                 }
                 AddFocusableObject(category, "Willy's Barrel", new(37, 33));
-                
             }
 
             if (!focusable[category].Any() == true) {
