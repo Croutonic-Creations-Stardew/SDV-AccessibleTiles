@@ -142,7 +142,6 @@ namespace AccessibleTiles.TrackingMode {
             categories.Add(category);
 
             if (location.Name == "Saloon") {
-
                 AddFocusableObject(category, "Gus's Fridge", new(18, 16));
             } else if (location.Name == "ScienceHouse") {
                 AddFocusableObject(category, "Robin's Woodpile", new(11, 19));
@@ -175,6 +174,7 @@ namespace AccessibleTiles.TrackingMode {
             } 
             
             else if (location is Town) {
+
                 if (Game1.player.hasQuest(31) && !Game1.player.hasMagnifyingGlass) {
                     AddFocusableObject(category, "Shadow Guy's Hiding Bush", new(28, 13));
                 }
@@ -183,6 +183,16 @@ namespace AccessibleTiles.TrackingMode {
                 if (entrance != null) {
                     AddFocusableObject(category, "Movie Theater Ticket Booth", entrance.Value);
                 }
+
+                AddFocusableObject("Trash Cans", "Stardraw Saloon", new(47, 70));
+                AddFocusableObject("Trash Cans", "1 River Road", new(52, 63));
+                AddFocusableObject("Trash Cans", "Mayor's Manor", new(56, 86));
+                AddFocusableObject("Trash Cans", "1 Willow Lane", new(13, 86));
+                AddFocusableObject("Trash Cans", "2 Willow Lane", new(19, 89));
+                AddFocusableObject("Trash Cans", "Blacksmith", new(97, 80));
+                AddFocusableObject("Trash Cans", "Museum", new(108, 91));
+                AddFocusableObject("Trash Cans", "Joja Mart", new(52, 63));
+
             } else if (location is Railroad) {
                 AddFocusableObject(category, "Recycle Bin", new(28, 36));
                 AddFocusableObject(category, "Empty Rainbow Shell Crate", new(45, 40));
