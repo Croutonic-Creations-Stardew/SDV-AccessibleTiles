@@ -127,6 +127,11 @@ namespace AccessibleTiles.TrackingMode {
                 AddFocusableObject(category, "Evelyn's Stove", new(3, 16));
             } else if (location.Name == "Tunnel") {
                 AddFocusableObject(category, "Lock Box", new(17, 6));
+            } else if (location.Name == "WitchWarpCave") {
+                AddFocusableObject(category, "Teleportation Rune", new(4, 5));
+            } else if (location.Name == "WitchSwamp") {
+                AddFocusableObject(category, "Teleportation Rune", new(20, 42));
+                AddFocusableObject(category, "WitchHut", new(20, 20));
             } else if (location is Town) {
                 if (Game1.player.hasQuest(31) && !Game1.player.hasMagnifyingGlass) {
                     AddFocusableObject(category, "Shadow Guy's Hiding Bush", new(28, 13));
@@ -134,11 +139,12 @@ namespace AccessibleTiles.TrackingMode {
 
                 Vector2? entrance = TrackerUtility.get_theater_entrance();
                 if (entrance != null) {
-                    AddFocusableObject(category, "Movie Theater Ticket Booth", entrance);
+                    AddFocusableObject(category, "Movie Theater Ticket Booth", entrance.Value);
                 }
             } else if (location is Railroad) {
                 AddFocusableObject(category, "Recycle Bin", new(28, 36));
                 AddFocusableObject(category, "Empty Rainbow Shell Crate", new(45, 40));
+                AddFocusableObject(category, "Witch Cave Entrance", new(54, 35));
             } else if (location is SeedShop) {
                 AddFocusableObject(category, "Vegetable Bin", new(19, 28));
             } else if (location is Beach) {
