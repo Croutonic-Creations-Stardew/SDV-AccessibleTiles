@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -129,6 +130,11 @@ namespace AccessibleTiles.TrackingMode {
             } else if (location is Town) {
                 if (Game1.player.hasQuest(31) && !Game1.player.hasMagnifyingGlass) {
                     AddFocusableObject(category, "Shadow Guy's Hiding Bush", new(28, 13));
+                }
+
+                Vector2? entrance = TrackerUtility.get_theater_entrance();
+                if (entrance != null) {
+                    AddFocusableObject(category, "Movie Theater Ticket Booth", entrance);
                 }
             } else if (location is Railroad) {
                 AddFocusableObject(category, "Recycle Bin", new(28, 36));
@@ -353,8 +359,6 @@ namespace AccessibleTiles.TrackingMode {
 
                 double distance = Math.Round(TrackerUtility.GetDistance(player.getTileLocation(), tileXY));
 
-                //Game1.currentLocation.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(346, 400, 8, 8), 10f, 1, 50, tileXY, flicker: false, flipped: false, layerDepth: 999, 0f, Color.White, 4f, 0f, 0f, 0f));
-                //autopath = false;
                 if (focus.reachable != false) {
                     if (autopath) {
                         Vector2? closest_tile = null;
@@ -392,8 +396,7 @@ namespace AccessibleTiles.TrackingMode {
                                     ReadCurrentFocus(false, false, true);
                                     mod.movingWithTracker = false;
                                     Task ignore = UnhaltNPCS();
-                                    player.canMove = true;
-                                    mod.Helper.ConsoleCommands.Trigger("debug", arguments: new string[] { "cm" });
+                                    FixMovement();
                                 });
                                 this.say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
                                 mod.movingWithTracker = true;
@@ -416,6 +419,20 @@ namespace AccessibleTiles.TrackingMode {
 
             }
 
+        }
+
+        private void FixMovement() {
+            //ripped from the debug cm command
+            Game1.player.isEating = false;
+            Game1.player.CanMove = true;
+            Game1.player.UsingTool = false;
+            Game1.player.usingSlingshot = false;
+            Game1.player.FarmerSprite.PauseForSingleAnimation = false;
+            if (Game1.player.CurrentTool is FishingRod)
+                (Game1.player.CurrentTool as FishingRod).isFishing = false;
+            if (Game1.player.mount != null) {
+                Game1.player.mount.dismount();
+            }
         }
 
         private void say(string text) {

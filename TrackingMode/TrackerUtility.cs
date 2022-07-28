@@ -27,6 +27,18 @@ namespace AccessibleTiles.TrackingMode {
             return Math.Sqrt(Math.Pow(((double)point.X - (double)player.X), 2) + Math.Pow(((double)point.Y - (double)player.Y), 2));
         }
 
+        public static Vector2? get_theater_entrance() {
+            if (Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater")) {
+                if (Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheaterJoja")) {
+                    return new Vector2(55, 20);
+                } else {
+                    return new Vector2(98, 51);
+                }
+            } else {
+                return null;
+            }
+        }
+
         public static string GetDirection(Vector2 start, Vector2 end) {
 
             double dx = end.X - start.X;
