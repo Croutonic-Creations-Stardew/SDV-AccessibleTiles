@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,9 +55,14 @@ namespace AccessibleTiles.TrackingMode {
              * This method uses breadth first search so the first item is the closest item, no need to reorder or check for closest item
              */
             foreach (var tile in scannedTiles) {
+
+                //ignore some of stardew access categories
+                if (tile.Value.category == "animal") continue;
+
                 AddFocusableObject(tile.Value.category, tile.Value.name, tile.Key);
             }
 
+            this.AddAnimals(location);
             this.AddSpecialPoints(location);
             this.AddEntrances(location);
 
@@ -109,6 +115,25 @@ namespace AccessibleTiles.TrackingMode {
 
         }
 
+        private void AddAnimals(GameLocation location) {
+
+            string category = "animal";
+
+            focusable.Add(category, new());
+            categories.Add(category);
+
+            Dictionary<string, SpecialObject> animals = TrackerUtility.GetAnimals(this.mod, location);
+
+            foreach (var (name, sObject) in animals) {
+                AddFocusableObject(category, name, sObject.TileLocation);
+            }
+
+            if (!focusable[category].Any() == true) {
+                focusable.Remove(category);
+            }
+
+        }
+
         private void AddSpecialPoints(GameLocation location) {
 
             string category = "special";
@@ -126,13 +151,52 @@ namespace AccessibleTiles.TrackingMode {
                 AddFocusableObject(category, "Evelyn's Stove", new(3, 16));
             } else if (location.Name == "Tunnel") {
                 AddFocusableObject(category, "Lock Box", new(17, 6));
-            } else if (location is Town) {
+            } else if (location.Name == "WitchWarpCave") {
+                AddFocusableObject(category, "Teleportation Rune", new(4, 5));
+            } else if (location.Name == "WitchSwamp") {
+                AddFocusableObject(category, "Teleportation Rune", new(20, 42));
+                AddFocusableObject(category, "WitchHut", new(20, 20));
+            } else if (location.Name == "SandyHouse") {
+                AddFocusableObject(category, "Shop Counter", new(2, 6));
+                AddFocusableObject(category, "Casino Entrance", new(17, 1));
+            } else if (location.Name == "SkullCave") {
+                AddFocusableObject(category, "Skull Cavern Entrance", new(3, 3));
+            } else if (location.Name == "WitchHut") {
+                AddFocusableObject(category, "Dark Shrine of Memory", new(7, 5));
+                AddFocusableObject(category, "Dark Shrine of Night Terrors", new(12, 6));
+                AddFocusableObject(category, "Dark Shrine of Selfishness", new(2, 6));
+                AddFocusableObject(category, "Teleportation Rune (Wizard's Basement)", new(11, 11));
+
+                //must have the magic ink quest
+                if(Game1.player.hasQuest(28)) {
+                    AddFocusableObject(category, "Magic Ink Location", new(4, 12));
+                }
+            } 
+            
+            else if (location is Town) {
+
                 if (Game1.player.hasQuest(31) && !Game1.player.hasMagnifyingGlass) {
                     AddFocusableObject(category, "Shadow Guy's Hiding Bush", new(28, 13));
                 }
+
+                Vector2? entrance = TrackerUtility.get_theater_entrance();
+                if (entrance != null) {
+                    AddFocusableObject(category, "Movie Theater Ticket Booth", entrance.Value);
+                }
+
+                AddFocusableObject("Trash Cans", "Stardraw Saloon", new(47, 70));
+                AddFocusableObject("Trash Cans", "1 River Road", new(52, 63));
+                AddFocusableObject("Trash Cans", "Mayor's Manor", new(56, 86));
+                AddFocusableObject("Trash Cans", "1 Willow Lane", new(13, 86));
+                AddFocusableObject("Trash Cans", "2 Willow Lane", new(19, 89));
+                AddFocusableObject("Trash Cans", "Blacksmith", new(97, 80));
+                AddFocusableObject("Trash Cans", "Museum", new(108, 91));
+                AddFocusableObject("Trash Cans", "Joja Mart", new(52, 63));
+
             } else if (location is Railroad) {
                 AddFocusableObject(category, "Recycle Bin", new(28, 36));
                 AddFocusableObject(category, "Empty Rainbow Shell Crate", new(45, 40));
+                AddFocusableObject(category, "Witch Cave Entrance", new(54, 35));
             } else if (location is SeedShop) {
                 AddFocusableObject(category, "Vegetable Bin", new(19, 28));
             } else if (location is Beach) {
@@ -140,7 +204,6 @@ namespace AccessibleTiles.TrackingMode {
                     AddFocusableObject(category, "Haley's Bracelet", new(53, 8));
                 }
                 AddFocusableObject(category, "Willy's Barrel", new(37, 33));
-                
             }
 
             if (!focusable[category].Any() == true) {
@@ -353,8 +416,6 @@ namespace AccessibleTiles.TrackingMode {
 
                 double distance = Math.Round(TrackerUtility.GetDistance(player.getTileLocation(), tileXY));
 
-                //Game1.currentLocation.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(346, 400, 8, 8), 10f, 1, 50, tileXY, flicker: false, flipped: false, layerDepth: 999, 0f, Color.White, 4f, 0f, 0f, 0f));
-                //autopath = false;
                 if (focus.reachable != false) {
                     if (autopath) {
                         Vector2? closest_tile = null;
@@ -392,8 +453,7 @@ namespace AccessibleTiles.TrackingMode {
                                     ReadCurrentFocus(false, false, true);
                                     mod.movingWithTracker = false;
                                     Task ignore = UnhaltNPCS();
-                                    player.canMove = true;
-                                    mod.Helper.ConsoleCommands.Trigger("debug", arguments: new string[] { "cm" });
+                                    FixMovement();
                                 });
                                 this.say($"moving near {focus_name}, to {tile.X}-{tile.Y}", true);
                                 mod.movingWithTracker = true;
@@ -416,6 +476,20 @@ namespace AccessibleTiles.TrackingMode {
 
             }
 
+        }
+
+        private void FixMovement() {
+            //ripped from the debug cm command
+            Game1.player.isEating = false;
+            Game1.player.CanMove = true;
+            Game1.player.UsingTool = false;
+            Game1.player.usingSlingshot = false;
+            Game1.player.FarmerSprite.PauseForSingleAnimation = false;
+            if (Game1.player.CurrentTool is FishingRod)
+                (Game1.player.CurrentTool as FishingRod).isFishing = false;
+            if (Game1.player.mount != null) {
+                Game1.player.mount.dismount();
+            }
         }
 
         private void say(string text) {
