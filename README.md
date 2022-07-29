@@ -2,6 +2,8 @@
 
 Accessibility mod which seeks to make movement and tracking easier.
 
+For downloads, go to [A4A-mods.com](https://a4a-mods.com/mods/details?uid=3)
+
 # Default Controls
 
 ## General
