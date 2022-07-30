@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Timers;
 using xTile.Dimensions;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
@@ -15,14 +15,35 @@ namespace AccessibleTiles.Modules.GridMovement {
         private readonly ModEntry Mod;
 
         public Boolean is_warping = false;
+        public Boolean is_moving = false;
+
+        //stop player from moving too fast
+        int minMillisecondsBetweenSteps = 150;
+        Timer timer = new Timer();
 
         public GridMovement(ModEntry mod) {
             this.Mod = mod;
+
+            //set is_moving after x time to allow the next grid movement
+            timer.Interval = minMillisecondsBetweenSteps;
+            timer.Elapsed += Timer_Elapsed;
+
         }
 
-        public void HandleGridMovement(int direction) {
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
+            is_moving = false;
+            timer.Stop();
+        }
 
-            if (this.is_warping == true || Game1.activeClickableMenu != null) return;
+        public void HandleGridMovement(int direction, InputButton pressedButton) {
+
+            if (this.is_warping == true || Game1.activeClickableMenu != null || is_moving) return;
+
+            is_moving = true;
+            timer.Start();
+
+            this.Mod.LastGridMovementButtonPressed = pressedButton;
+            this.Mod.LastGridMovementDirection = direction;
 
             Mod.Output($"Move Direction: {direction}");
 

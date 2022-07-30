@@ -18,6 +18,9 @@ namespace AccessibleTiles {
 
         public Boolean IsUsingPathfinding = false;
 
+        public int? LastGridMovementDirection = null;
+        public InputButton? LastGridMovementButtonPressed = null;
+
         /*********
         ** Public methods
         *********/
@@ -45,25 +48,13 @@ namespace AccessibleTiles {
             }
         }
 
-        private int passed_ticks = 0;
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e) {
-
-            if (Game1.player.controller != null && (Game1.activeClickableMenu == null || Game1.IsMultiplayer)) {
-
-                if(Game1.player.controller.timerSinceLastCheckPoint > 350) {
-                    Game1.player.controller.endBehaviorFunction(Game1.player, Game1.currentLocation);
-                    ObjectTracker.GetLocationObjects(reset_focus: false);
-
-                    this.Output("Pathfinding forcibly stopped. Took too long to reach checkpoint.", true);
+            if(LastGridMovementButtonPressed != null) {
+                SButton button = LastGridMovementButtonPressed.Value.ToSButton();
+                if (!GridMovement.is_moving && (this.Helper.Input.IsDown(button) || this.Helper.Input.IsSuppressed(button))) {
+                    GridMovement.HandleGridMovement(LastGridMovementDirection.Value, LastGridMovementButtonPressed.Value);
                 }
-
-                if (passed_ticks > 20) {
-                    Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation());
-                    passed_ticks = 0;
-                }
-                passed_ticks++;
             }
-
         }
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e) {
@@ -114,25 +105,25 @@ namespace AccessibleTiles {
                 if (this.Config.GridMovementActive) {
                     foreach (InputButton Button in Game1.options.moveUpButton) {
                         if (button.Equals(Button)) {
-                            GridMovement.HandleGridMovement(0);
+                            GridMovement.HandleGridMovement(0, Button);
                             this.Helper.Input.Suppress(e.Button);
                         }
                     }
                     foreach (InputButton Button in Game1.options.moveRightButton) {
                         if (button.Equals(Button)) {
-                            GridMovement.HandleGridMovement(1);
+                            GridMovement.HandleGridMovement(1, Button);
                             this.Helper.Input.Suppress(e.Button);
                         }
                     }
                     foreach (InputButton Button in Game1.options.moveDownButton) {
                         if (button.Equals(Button)) {
-                            GridMovement.HandleGridMovement(2);
+                            GridMovement.HandleGridMovement(2, Button);
                             this.Helper.Input.Suppress(e.Button);
                         }
                     }
                     foreach (InputButton Button in Game1.options.moveLeftButton) {
                         if (button.Equals(Button)) {
-                            GridMovement.HandleGridMovement(3);
+                            GridMovement.HandleGridMovement(3, Button);
                             this.Helper.Input.Suppress(e.Button);
                         }
                     }
