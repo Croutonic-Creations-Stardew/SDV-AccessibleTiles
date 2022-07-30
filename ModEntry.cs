@@ -51,7 +51,7 @@ namespace AccessibleTiles {
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e) {
             if(LastGridMovementButtonPressed != null) {
                 SButton button = LastGridMovementButtonPressed.Value.ToSButton();
-                if (!GridMovement.is_moving && (this.Helper.Input.IsDown(button) || this.Helper.Input.IsSuppressed(button))) {
+                if (Game1.activeClickableMenu == null && !GridMovement.is_moving && (this.Helper.Input.IsDown(button) || this.Helper.Input.IsSuppressed(button))) {
                     GridMovement.HandleGridMovement(LastGridMovementDirection.Value, LastGridMovementButtonPressed.Value);
                 }
             }
@@ -101,7 +101,7 @@ namespace AccessibleTiles {
                 this.Helper.Input.Suppress(e.Button);
             }
 
-            if (!this.Config.GridMovementOverrideKey.IsDown() && e.Button.TryGetStardewInput(out InputButton button)) {
+            if (Game1.activeClickableMenu == null && !this.Config.GridMovementOverrideKey.IsDown() && e.Button.TryGetStardewInput(out InputButton button)) {
                 if (this.Config.GridMovementActive) {
                     foreach (InputButton Button in Game1.options.moveUpButton) {
                         if (button.Equals(Button)) {

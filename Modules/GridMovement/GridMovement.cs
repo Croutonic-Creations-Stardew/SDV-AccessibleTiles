@@ -37,7 +37,7 @@ namespace AccessibleTiles.Modules.GridMovement {
 
         public void HandleGridMovement(int direction, InputButton pressedButton) {
 
-            if (this.is_warping == true || Game1.activeClickableMenu != null || is_moving) return;
+            if (this.is_warping == true || is_moving) return;
 
             is_moving = true;
             timer.Start();
