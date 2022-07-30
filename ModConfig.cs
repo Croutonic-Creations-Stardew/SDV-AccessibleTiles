@@ -32,5 +32,7 @@ namespace AccessibleTiles {
 
         public KeybindList ObjectTrackerCancelAutoWalking { get; set; } = KeybindList.Parse("Escape");
 
+        public KeybindList ObjectTrackerSwitchSortingMode { get; set; } = KeybindList.Parse("OemTilde");
+
     }
 }

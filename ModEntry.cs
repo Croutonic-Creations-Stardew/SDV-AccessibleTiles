@@ -52,6 +52,8 @@ namespace AccessibleTiles {
 
                 if(Game1.player.controller.timerSinceLastCheckPoint > 350) {
                     Game1.player.controller.endBehaviorFunction(Game1.player, Game1.currentLocation);
+                    ObjectTracker.GetLocationObjects(reset_focus: false);
+
                     this.Output("Pathfinding forcibly stopped. Took too long to reach checkpoint.", true);
                 }
 

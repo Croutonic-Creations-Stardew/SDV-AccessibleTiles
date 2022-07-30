@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 namespace AccessibleTiles.Modules.ObjectTracker {
     internal class ObjectTracker {
 
+        private Boolean sortByProxy = true;
+
         private readonly ModEntry Mod;
         private readonly ModConfig ModConfig;
 
@@ -35,11 +37,18 @@ namespace AccessibleTiles.Modules.ObjectTracker {
                 CycleObjects();
             } else if (ModConfig.ObjectTrackerReadSelectedObject.JustPressed()) {
                 ReadCurrentlySelectedObject();
+            } else if(ModConfig.ObjectTrackerSwitchSortingMode.JustPressed()) {
+                this.sortByProxy = !this.sortByProxy;
+
+                this.Mod.Output("Sort By Proxy: " + (sortByProxy ? "Enabled" : "Disabled"), true);
+                GetLocationObjects(reset_focus: false);
+
             }
 
             if (ModConfig.ObjectTrackerMoveToSelectedObject.JustPressed()) {
                 MoveToCurrentlySelectedObject();
             } else if (ModConfig.ObjectTrackerReadSelectedObjectTileLocation.JustPressed()) {
+                GetLocationObjects(reset_focus: false);
                 ReadCurrentlySelectedObject(readTileOnly: true);
             }
 
@@ -176,7 +185,6 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
         }
 
-
         private SpecialObject? GetCurrentlySelectedObject() {
             return TrackedObjects.GetObjects()[SelectedCategory][SelectedObject];
         }
@@ -209,11 +217,21 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             }
         }
 
-        internal void GetLocationObjects() {
+        internal void GetLocationObjects(bool reset_focus = true) {
             TrackedObjects tracked_objects = new TrackedObjects(this.Mod);
-            tracked_objects.FindObjectsInArea();
+            tracked_objects.FindObjectsInArea(!this.sortByProxy);
             this.TrackedObjects = tracked_objects;
-            this.SetDefaultCategoryAndFocusedObject();
+
+            if(!reset_focus) {
+                if(!tracked_objects.GetObjects().ContainsKey(SelectedCategory) || !tracked_objects.GetObjects()[SelectedCategory].ContainsKey(SelectedObject)) {
+                    reset_focus = true;
+                }
+            }
+
+            if(reset_focus) {
+                this.SetDefaultCategoryAndFocusedObject();
+            }
+
         }
     }
 }

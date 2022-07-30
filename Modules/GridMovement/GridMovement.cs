@@ -22,7 +22,7 @@ namespace AccessibleTiles.Modules.GridMovement {
 
         public void HandleGridMovement(int direction) {
 
-            if (this.is_warping == true) return;
+            if (this.is_warping == true || Game1.activeClickableMenu != null) return;
 
             Mod.Output($"Move Direction: {direction}");
 

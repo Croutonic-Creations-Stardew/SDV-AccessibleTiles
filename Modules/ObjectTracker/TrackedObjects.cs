@@ -25,10 +25,20 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             return Objects;
         }
 
-        public void FindObjectsInArea() {
+        public void FindObjectsInArea(bool sortAlphabetically = false) {
             TTStardewAccess StardewAccessObjects = new TTStardewAccess(this.Mod.Integrations.StardewAccess);
             if (StardewAccessObjects.HasObjects()) {
                 this.AddObjects(StardewAccessObjects.GetObjects());
+            }
+
+            if(sortAlphabetically) {
+                foreach (var cat in Objects) {
+                    var ordered = cat.Value.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+                    cat.Value.Clear();
+                    foreach (var item in ordered) {
+                        cat.Value.Add(item.Key, item.Value);
+                    }
+                }
             }
         }
 
