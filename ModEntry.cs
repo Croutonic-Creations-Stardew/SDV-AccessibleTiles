@@ -10,7 +10,7 @@ namespace AccessibleTiles {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod {
 
-        private ModConfig Config;
+        public ModConfig Config;
         public ModIntegrations Integrations;
 
         private GridMovement GridMovement;
@@ -48,8 +48,15 @@ namespace AccessibleTiles {
             }
         }
 
+        public ModConfig GetModConfig() {
+            return this.Config;
+        }
+
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e) {
             if(LastGridMovementButtonPressed != null) {
+
+                
+
                 SButton button = LastGridMovementButtonPressed.Value.ToSButton();
                 if (Game1.activeClickableMenu == null && !GridMovement.is_moving && (this.Helper.Input.IsDown(button) || this.Helper.Input.IsSuppressed(button))) {
                     GridMovement.HandleGridMovement(LastGridMovementDirection.Value, LastGridMovementButtonPressed.Value);
@@ -134,7 +141,7 @@ namespace AccessibleTiles {
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e) {
 
-            this.Integrations = new ModIntegrations(this.Helper);
+            this.Integrations = new ModIntegrations(this);
 
         }
 

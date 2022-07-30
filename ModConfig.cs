@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AccessibleTiles {
-    class ModConfig {
+    public class ModConfig {
 
         /*
         * Grid Movement Keys
