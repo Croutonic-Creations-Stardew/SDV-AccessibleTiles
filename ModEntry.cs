@@ -4,16 +4,19 @@ using AccessibleTiles.Integrations;
 using AccessibleTiles.Modules.GridMovement;
 using StardewValley;
 using System;
+using AccessibleTiles.Modules.ObjectTracker;
 
 namespace AccessibleTiles {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod {
 
         private ModConfig Config;
-        private ModIntegrations Integrations;
+        public ModIntegrations Integrations;
 
         private GridMovement GridMovement;
-        public Boolean log { get; set; }
+        private ObjectTracker ObjectTracker;
+
+        public Boolean IsUsingPathfinding = false;
 
         /*********
         ** Public methods
@@ -24,26 +27,65 @@ namespace AccessibleTiles {
 
             this.Config = this.Helper.ReadConfig<ModConfig>();
             this.GridMovement = new GridMovement(this);
+            this.ObjectTracker = new ObjectTracker(this, this.Config);
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             helper.Events.Input.ButtonsChanged += Input_ButtonsChanged;
-            helper.Events.Player.Warped += GridMovement.PlayerWarped;
+            helper.Events.Player.Warped += Player_Warped;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
 
         }
 
-        public void Log(string text) {
+        public void Output(string text, bool say = false) {
             this.Monitor.Log(text, LogLevel.Debug);
+            if(say) {
+                Integrations.SRSay(text);
+            }
+        }
+
+        private int passed_ticks = 0;
+        private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e) {
+
+            if (Game1.player.controller != null && (Game1.activeClickableMenu == null || Game1.IsMultiplayer)) {
+
+                if(Game1.player.controller.timerSinceLastCheckPoint > 350) {
+                    Game1.player.controller.endBehaviorFunction(Game1.player, Game1.currentLocation);
+                    this.Output("Pathfinding forcibly stopped. Took too long to reach checkpoint.", true);
+                }
+
+                if (passed_ticks > 20) {
+                    Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation());
+                    passed_ticks = 0;
+                }
+                passed_ticks++;
+            }
+
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e) {
+            ObjectTracker.GetLocationObjects();
+        }
+
+        private void Player_Warped(object sender, WarpedEventArgs e) {
+            GridMovement.PlayerWarped(sender, e);
+            ObjectTracker.GetLocationObjects();
         }
 
         private void Input_ButtonsChanged(object sender, ButtonsChangedEventArgs e) {
-            
+
+            if (Game1.activeClickableMenu != null) return;
+
             if(this.Config.ToggleGridMovementKey.JustPressed()) {
                 this.Config.GridMovementActive = !this.Config.GridMovementActive;
 
                 string output = "Grid Movement Status: " + (this.Config.GridMovementActive ? "Active" : "Inactive");
-                Integrations.SRSay(output);
-                Log(output);
+                Output(output, true);
+
+            } else {
+
+                ObjectTracker.HandleKeys(sender, e);
 
             }
 
@@ -51,7 +93,18 @@ namespace AccessibleTiles {
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e) {
 
-            if(GridMovement.is_warping == true) {
+            if (Game1.player.controller != null) {
+
+                if(this.Config.ObjectTrackerCancelAutoWalking.JustPressed()) {
+                    Game1.player.controller.endBehaviorFunction(Game1.player, Game1.currentLocation);
+                }
+
+                this.Helper.Input.Suppress(e.Button);
+                return;
+
+            }
+
+            if (GridMovement.is_warping == true) {
                 this.Helper.Input.Suppress(e.Button);
             }
 

@@ -24,7 +24,7 @@ namespace AccessibleTiles.Modules.GridMovement {
 
             if (this.is_warping == true) return;
 
-            Mod.Log($"Move Direction: {direction}");
+            Mod.Output($"Move Direction: {direction}");
 
             Farmer player = Game1.player;
             GameLocation location = Game1.currentLocation;
@@ -52,13 +52,13 @@ namespace AccessibleTiles.Modules.GridMovement {
                     break;
             }
 
-            Mod.Log($"Move To: {tileLocation.ToString()}");
+            Mod.Output($"Move To: {tileLocation.ToString()}");
             player.CanMove = false;
 
             Warp warp = location.isCollidingWithWarpOrDoor(new Microsoft.Xna.Framework.Rectangle((int)tileLocation.X * Game1.tileSize, (int)tileLocation.Y * Game1.tileSize, Game1.tileSize, Game1.tileSize));
             if (warp != null) {
 
-                Mod.Log("Collides with Warp or Door");
+                Mod.Output("Collides with Warp or Door");
 
                 if (location.checkAction(new Location((int)tileLocation.X * Game1.tileSize, (int)tileLocation.Y * Game1.tileSize), Game1.viewport, Game1.player)) {
                     this.is_warping = true;
