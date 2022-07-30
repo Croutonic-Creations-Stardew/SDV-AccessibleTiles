@@ -1,0 +1,196 @@
+{
+  "Saloon": [
+    {
+      "name": "Gus's Fridge",
+      "xPos": 18,
+      "yPos": 16
+    }
+  ],
+  "ScienceHouse": [
+    {
+      "name": "Robin's Woodpile",
+      "xPos": 11,
+      "yPos": 19
+    }
+  ],
+  "ArchaeologyHouse": [
+    {
+      "name": "Box for Bone Fragments",
+      "xPos": 6,
+      "yPos": 9
+    }
+  ],
+  "JoshHouse": [
+    {
+      "name": "Evelyn's Stove",
+      "xPos": 3,
+      "yPos": 16
+    }
+  ],
+  "Tunnel": [
+    {
+      "name": "Lock Box",
+      "xPos": 17,
+      "yPos": 6
+    }
+  ],
+  "WitchWarpCave": [
+    {
+      "name": "Teleporation Rune",
+      "xPos": 4,
+      "yPos": 5
+    }
+  ],
+  "WitchSwamp": [
+    {
+      "name": "Teleportation Rune",
+      "xPos": 20,
+      "yPos": 42
+    },
+    {
+      "name": "WitchHut",
+      "xPos": 20,
+      "yPos": 20
+    }
+  ],
+  "SandyHouse": [
+    {
+      "name": "Shop Counter",
+      "xPos": 2,
+      "yPos": 6
+    },
+    {
+      "name": "Casino Entrance",
+      "xPos": 17,
+      "yPos": 1
+    }
+  ],
+  "SkullCave": [
+    {
+      "name": "Skull Cavern Entrance",
+      "xPos": 3,
+      "yPos": 3
+    }
+  ],
+  "WitchHut": [
+    {
+      "name": "Dark Shrine of Memory",
+      "xPos": 7,
+      "yPos": 5
+    },
+    {
+      "name": "Dark Shrine of Night Terrors",
+      "xPos": 12,
+      "yPos": 6
+    },
+    {
+      "name": "Dark Shrine of Selfishness",
+      "xPos": 2,
+      "yPos": 6
+    },
+    {
+      "name": "Teleportation Rune (Wizard's Basement)",
+      "xPos": 11,
+      "yPos": 11
+    },
+    {
+      "name": "Magic Ink Location",
+      "xPos": 4,
+      "yPos": 12,
+      "requiresQuest": 28
+    }
+  ],
+  "Town": [
+    {
+      "name": "Shadow Guy's Hiding Bush",
+      "xPos": 28,
+      "yPos": 13,
+      "extraChecksHook": 1
+    },
+    {
+      "category_override": "Trash Cans",
+      "name": "Stardew Saloon",
+      "xPos": 47,
+      "yPos": 70
+    },
+    {
+      "category_override": "Trash Cans",
+      "name": "1 River Road",
+      "xPos": 52,
+      "yPos": 63
+    },
+    {
+      "category_override": "Trash Cans",
+      "name": "Mayor's Manor",
+      "xPos": 56,
+      "yPos": 86
+    },
+    {
+      "category_override": "Trash Cans",
+      "name": "1 Willow Lane",
+      "xPos": 13,
+      "yPos": 86
+    },
+    {
+      "category_override": "Trash Cans",
+      "name": "2 Willow Lane",
+      "xPos": 19,
+      "yPos": 89
+    },
+    {
+      "category_override": "Trash Cans",
+      "name": "Blacksmith",
+      "xPos": 97,
+      "yPos": 80
+    },
+    {
+      "category_override": "Trash Cans",
+      "name": "Museum",
+      "xPos": 108,
+      "yPos": 91
+    },
+    {
+      "category_override": "Trash Cans",
+      "name": "Joja Mart",
+      "xPos": 110,
+      "yPos": 56
+    }
+  ],
+  "Railroad": [
+    {
+      "name": "Recycle Bin",
+      "xPos": 28,
+      "yPos": 36
+    },
+    {
+      "name": "Empty Rainbow Shell Crate",
+      "xPos": 45,
+      "yPos": 40
+    },
+    {
+      "name": "Witch Cave Entrance",
+      "xPos": 54,
+      "yPos": 35
+    }
+  ],
+  "SeedShop": [
+    {
+      "name": "Vegetable Bin",
+      "xPos": 19,
+      "yPos": 28
+    }
+  ],
+  "Beach": [
+    {
+      "name": "Haley's Bracelet",
+      "xPos": 53,
+      "yPos": 8,
+      "extraChecksHook": 2
+    },
+    {
+      "name": "Willy's Barrel",
+      "xPos": 37,
+      "yPos": 33
+    }
+  ]
+}

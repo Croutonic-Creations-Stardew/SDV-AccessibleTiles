@@ -26,12 +26,18 @@ namespace AccessibleTiles.Modules.ObjectTracker {
         }
 
         public void FindObjectsInArea(bool sortAlphabetically = false) {
+
             TTStardewAccess StardewAccessObjects = new TTStardewAccess(this.Mod.Integrations.StardewAccess);
             if (StardewAccessObjects.HasObjects()) {
                 this.AddObjects(StardewAccessObjects.GetObjects());
             }
 
-            if(sortAlphabetically) {
+            TTSpecialPoints SpecialPointsObjects = new TTSpecialPoints(this.Mod);
+            if (SpecialPointsObjects.HasObjects()) {
+                this.AddObjects(SpecialPointsObjects.GetObjects());
+            }
+
+            if (sortAlphabetically) {
                 foreach (var cat in Objects) {
                     var ordered = cat.Value.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
                     cat.Value.Clear();
