@@ -24,17 +24,11 @@ For downloads, go to [A4A-mods.com](https://a4a-mods.com/mods/details?uid=3)
 * END - Read the tile location of the nearest focused object
 * CTRL + HOME - Automatically walk near focused object
 * CTRL + END - Get detailed directions on how to reach a focused object
-* Grave/Tilde to change tracker object sort type
 
 ### Tracking Utility Categories
 
 Any given category will only be selectable if there are objects that fit into that category present in your current map location.
 Categories are mostly derived from the Stardew Access mod.
-
-#### Sort Types
-
-* By Name
-* By Proximity (closest first)
 
 ## JAWS Support
 
