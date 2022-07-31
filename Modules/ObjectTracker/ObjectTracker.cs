@@ -47,17 +47,17 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
         public void HandleKeys(object sender, ButtonsChangedEventArgs e) {
 
-            if (ModConfig.ObjectTrackerCycleUpCategory.JustPressed()) {
+            if (ModConfig.OTCycleUpCategory.JustPressed()) {
                 CycleCategory(back: true);
-            } else if (ModConfig.ObjectTrackerCycleDownCategory.JustPressed()) {
+            } else if (ModConfig.OTCycleDownCategory.JustPressed()) {
                 CycleCategory();
-            } else if (ModConfig.ObjectTrackerCycleUpObject.JustPressed()) {
+            } else if (ModConfig.OTCycleUpObject.JustPressed()) {
                 CycleObjects(back: true);
-            } else if (ModConfig.ObjectTrackerCycleDownObject.JustPressed()) {
+            } else if (ModConfig.OTCycleDownObject.JustPressed()) {
                 CycleObjects();
-            } else if (ModConfig.ObjectTrackerReadSelectedObject.JustPressed()) {
+            } else if (ModConfig.OTReadSelectedObject.JustPressed()) {
                 ReadCurrentlySelectedObject();
-            } else if(ModConfig.ObjectTrackerSwitchSortingMode.JustPressed()) {
+            } else if(ModConfig.OTSwitchSortingMode.JustPressed()) {
                 this.sortByProxy = !this.sortByProxy;
 
                 this.Mod.Output("Sort By Proxy: " + (sortByProxy ? "Enabled" : "Disabled"), true);
@@ -65,9 +65,9 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
             }
 
-            if (ModConfig.ObjectTrackerMoveToSelectedObject.JustPressed()) {
+            if (ModConfig.OTMoveToSelectedObject.JustPressed()) {
                 MoveToCurrentlySelectedObject();
-            } else if (ModConfig.ObjectTrackerReadSelectedObjectTileLocation.JustPressed()) {
+            } else if (ModConfig.OTReadSelectedObjectTileLocation.JustPressed()) {
                 GetLocationObjects(reset_focus: false);
                 ReadCurrentlySelectedObject(readTileOnly: true);
             }
@@ -99,7 +99,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
             if (closestTile != null) {
 
-                this.Mod.Output($"Start pathfinding to {closestTile.Value}.", true);
+                this.Mod.Output($"Moving to {closestTile.Value.X},{closestTile.Value.Y}.", true);
 
                 timer.Start();
                 player.controller = new PathFindController(player, Game1.currentLocation, closestTile.Value.ToPoint(), -1, (Character farmer, GameLocation location) => {
@@ -154,14 +154,25 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             Vector2 sObjectTile = sObject.TileLocation;
 
             string direction = Utility.GetDirection(playerTile, sObject.TileLocation);
-            double distance = Utility.GetDistance(playerTile, sObject.TileLocation);
+            string distance = Utility.GetDistance(playerTile, sObject.TileLocation).ToString();
 
-            if(readTileOnly) {
-                this.Mod.Output($"{SelectedObject} is at {sObjectTile.X}-{sObjectTile.Y}, player at {playerTile.X}-{playerTile.Y}", true);
-            } else {
-                this.Mod.Output($"{SelectedObject} is {direction} {distance} tiles, at {sObjectTile.X}-{sObjectTile.Y}, player at {playerTile.X}-{playerTile.Y}", true);
-            }
+            this.Mod.Output(ReplacePlaceholders(readTileOnly ? this.ModConfig.OTReadSelectedObjectTileText : this.ModConfig.OTReadSelectedObjectText, playerTile, sObjectTile, direction, distance), true);
 
+        }
+
+        private string ReplacePlaceholders(string s, Vector2 playerTile, Vector2 sObjectTile, string direction, string distance) {
+            StringBuilder sb = new StringBuilder(s);
+
+            sb.Replace("{object}", SelectedObject);
+
+            sb.Replace("{objectX}", $"{sObjectTile.X}");
+            sb.Replace("{objectY}", $"{sObjectTile.Y}");
+            sb.Replace("{playerX}", $"{playerTile.X}");
+            sb.Replace("{playerY}", $"{playerTile.Y}");
+            sb.Replace("{direction}", $"{direction}");
+            sb.Replace("{distance}", $"{distance} tiles");
+
+            return sb.ToString().ToLower();
         }
 
         private void CycleCategory(bool back = false) {
@@ -178,10 +189,10 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             this.SetFocusedObjectToFirstInCategory();
 
             if (suffix_text.Length > 0) {
-                suffix_text = " | " + suffix_text;
+                suffix_text = ", " + suffix_text;
             }
 
-            this.Mod.Output($"{SelectedCategory} | Object: {SelectedObject}" + suffix_text, true);
+            this.Mod.Output($"{SelectedCategory}, Object: {SelectedObject}" + suffix_text, true);
 
         }
 
@@ -200,10 +211,10 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             string suffix_text = Utility.DoCycle(ref SelectedObject, object_keys, back);
 
             if(suffix_text.Length > 0) {
-                suffix_text = " | " + suffix_text;
+                suffix_text = ", " + suffix_text;
             }
 
-            this.Mod.Output($"{SelectedObject} | Category: {SelectedCategory}" + suffix_text, true);
+            this.Mod.Output($"{SelectedObject}, Category: {SelectedCategory}" + suffix_text, true);
 
         }
 

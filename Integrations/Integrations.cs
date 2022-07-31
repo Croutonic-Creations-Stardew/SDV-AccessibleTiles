@@ -47,7 +47,7 @@ namespace AccessibleTiles.Integrations {
             //grid movement
             ConfigMenu.AddSectionTitle(
                 Mod.ModManifest,
-                text: () => "Grid Movement"
+                text: () => "Grid Movement Settings"
             );
 
             ConfigMenu.AddBoolOption(
@@ -74,71 +74,93 @@ namespace AccessibleTiles.Integrations {
             //tracker
             ConfigMenu.AddSectionTitle(
                 Mod.ModManifest,
-                text: () => "Object Tracker"
+                text: () => "Object Tracker Settings"
             );
 
             ConfigMenu.AddKeybindList(
                 Mod.ModManifest,
                 name: () => "Cycle Up Category",
-                getValue: () => config.ObjectTrackerCycleUpCategory,
-                setValue: value => config.ObjectTrackerCycleUpCategory = value
+                getValue: () => config.OTCycleUpCategory,
+                setValue: value => config.OTCycleUpCategory = value
             );
 
             ConfigMenu.AddKeybindList(
                 Mod.ModManifest,
                 name: () => "Cycle Down Category",
-                getValue: () => config.ObjectTrackerCycleDownCategory,
-                setValue: value => config.ObjectTrackerCycleDownCategory = value
+                getValue: () => config.OTCycleDownCategory,
+                setValue: value => config.OTCycleDownCategory = value
             );
 
             ConfigMenu.AddKeybindList(
                 Mod.ModManifest,
                 name: () => "Cycle Up Object",
-                getValue: () => config.ObjectTrackerCycleUpObject,
-                setValue: value => config.ObjectTrackerCycleUpObject = value
+                getValue: () => config.OTCycleUpObject,
+                setValue: value => config.OTCycleUpObject = value
             );
 
             ConfigMenu.AddKeybindList(
                 Mod.ModManifest,
                 name: () => "Cycle Down Object",
-                getValue: () => config.ObjectTrackerCycleDownObject,
-                setValue: value => config.ObjectTrackerCycleDownObject = value
+                getValue: () => config.OTCycleDownObject,
+                setValue: value => config.OTCycleDownObject = value
             );
 
             ConfigMenu.AddKeybindList(
                 Mod.ModManifest,
                 name: () => "Read Selected Object",
-                getValue: () => config.ObjectTrackerReadSelectedObject,
-                setValue: value => config.ObjectTrackerReadSelectedObject = value
+                getValue: () => config.OTReadSelectedObject,
+                setValue: value => config.OTReadSelectedObject = value
             );
 
             ConfigMenu.AddKeybindList(
                 Mod.ModManifest,
                 name: () => "Read Selected Object Tile",
-                getValue: () => config.ObjectTrackerReadSelectedObjectTileLocation,
-                setValue: value => config.ObjectTrackerReadSelectedObjectTileLocation = value
+                getValue: () => config.OTReadSelectedObjectTileLocation,
+                setValue: value => config.OTReadSelectedObjectTileLocation = value
             );
 
             ConfigMenu.AddKeybindList(
                 Mod.ModManifest,
                 name: () => "Move To Selected Object",
-                getValue: () => config.ObjectTrackerMoveToSelectedObject,
-                setValue: value => config.ObjectTrackerMoveToSelectedObject = value
+                getValue: () => config.OTMoveToSelectedObject,
+                setValue: value => config.OTMoveToSelectedObject = value
             );
 
             ConfigMenu.AddKeybindList(
                 Mod.ModManifest,
                 name: () => "Cancel Auto Walking",
-                getValue: () => config.ObjectTrackerCancelAutoWalking,
-                setValue: value => config.ObjectTrackerCancelAutoWalking = value
+                getValue: () => config.OTCancelAutoWalking,
+                setValue: value => config.OTCancelAutoWalking = value
             );
 
             ConfigMenu.AddKeybindList(
                 Mod.ModManifest,
                 name: () => "Switch Sorting Mode",
-                getValue: () => config.ObjectTrackerSwitchSortingMode,
-                setValue: value => config.ObjectTrackerSwitchSortingMode = value
+                getValue: () => config.OTSwitchSortingMode,
+                setValue: value => config.OTSwitchSortingMode = value
             );
+
+            //screen reader
+            if (StardewAccess != null) {
+                ConfigMenu.AddSectionTitle(
+                    Mod.ModManifest,
+                    text: () => "Screen Reader Settings"
+                );
+
+                ConfigMenu.AddTextOption(
+                    Mod.ModManifest,
+                    name: () => "Read Object Text Template",
+                    getValue: () => config.OTReadSelectedObjectText,
+                    setValue: value => config.OTReadSelectedObjectText = value
+                );
+
+                ConfigMenu.AddTextOption(
+                    Mod.ModManifest,
+                    name: () => "Read Object Text Template",
+                    getValue: () => config.OTReadSelectedObjectText,
+                    setValue: value => config.OTReadSelectedObjectText = value
+                );
+            }
 
         }
 

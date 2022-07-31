@@ -42,7 +42,7 @@ namespace AccessibleTiles {
         }
 
         public void Output(string text, bool say = false) {
-            this.Monitor.Log(text, LogLevel.Debug);
+            this.Monitor.Log(text + (!say ? " (Not Read)" : ""), say ? LogLevel.Info : LogLevel.Debug);
             if(say) {
                 Integrations.SRSay(text);
             }
@@ -95,7 +95,7 @@ namespace AccessibleTiles {
 
             if (Game1.player.controller != null) {
 
-                if(this.Config.ObjectTrackerCancelAutoWalking.JustPressed()) {
+                if(this.Config.OTCancelAutoWalking.JustPressed()) {
                     Game1.player.controller.endBehaviorFunction(Game1.player, Game1.currentLocation);
                 }
 
