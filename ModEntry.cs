@@ -1,45 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AccessibleTiles.Integrations;
-using AccessibleTiles.TrackingMode;
-using Microsoft.Xna.Framework;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
+using AccessibleTiles.Integrations;
+using AccessibleTiles.Modules.GridMovement;
 using StardewValley;
-using StardewValley.Buildings;
-using StardewValley.Locations;
-using StardewValley.Menus;
-using StardewValley.TerrainFeatures;
-using xTile.Dimensions;
-using xTile.Layers;
-using xTile.ObjectModel;
-using xTile.Tiles;
+using System;
+using AccessibleTiles.Modules.ObjectTracker;
 
 namespace AccessibleTiles {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod {
 
-        private IModHelper helper;
-        private Boolean is_warping = false;
-
-        public Tracker trackingMode;
-
-        private SButton? last_button = null;
-
-        private Dictionary<SButton, int> key_map = new();
-
-        private Boolean grid_movement_active;
-
         public ModConfig Config;
+        public ModIntegrations Integrations;
 
-        public StardewAccessInterface? stardewAccess;
+        public GridMovement GridMovement;
+        private ObjectTracker ObjectTracker;
 
-        public ConsoleUtil console;
+        public Boolean IsUsingPathfinding = false;
 
-        public bool movingWithTracker = false;
+        public int? LastGridMovementDirection = null;
+        public InputButton? LastGridMovementButtonPressed = null;
 
         /*********
         ** Public methods
@@ -48,363 +28,120 @@ namespace AccessibleTiles {
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper) {
 
-            this.helper = helper;
-            this.console = new ConsoleUtil(this.Monitor);
+            this.Config = this.Helper.ReadConfig<ModConfig>();
+            this.GridMovement = new GridMovement(this);
+            this.ObjectTracker = new ObjectTracker(this, this.Config);
 
-
-            this.Config = helper.ReadConfig<ModConfig>();
-
-            grid_movement_active = Config.GridModeActiveByDefault;
-
-            helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
-            helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecondUpdateTicked;
-            helper.Events.Input.ButtonPressed += this.OnButtonPressed;
-            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            helper.Events.Input.ButtonsChanged += Input_ButtonsChanged;
             helper.Events.Player.Warped += Player_Warped;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
 
-            key_map.Add(Config.GridUpKey, 0);
-            key_map.Add(Config.GridRightKey, 1);
-            key_map.Add(Config.GridDownKey, 2);
-            key_map.Add(Config.GridLeftKey, 3);
+        }
 
-            key_map.Add(SButton.DPadUp, 0);
-            key_map.Add(SButton.DPadRight, 1);
-            key_map.Add(SButton.DPadDown, 2);
-            key_map.Add(SButton.DPadLeft, 3);
+        public void Output(string text, bool say = false) {
+            this.Monitor.Log(text + (!say ? " (Not Read)" : ""), say ? LogLevel.Info : LogLevel.Debug);
+            if(say) {
+                Integrations.SRSay(text);
+            }
+        }
 
-            trackingMode = new Tracker(this);
+        public ModConfig GetModConfig() {
+            return this.Config;
+        }
 
+        private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e) {
+            if(LastGridMovementButtonPressed != null) {
+
+                
+
+                SButton button = LastGridMovementButtonPressed.Value.ToSButton();
+                if (Game1.activeClickableMenu == null && !GridMovement.is_moving && !this.Config.GridMovementOverrideKey.IsDown()  && (this.Helper.Input.IsDown(button) || this.Helper.Input.IsSuppressed(button))) {
+                    GridMovement.HandleGridMovement(LastGridMovementDirection.Value, LastGridMovementButtonPressed.Value);
+                }
+            }
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e) {
+            ObjectTracker.GetLocationObjects();
         }
 
         private void Player_Warped(object sender, WarpedEventArgs e) {
-            if (this.is_warping) {
-                this.is_warping = false;
-            }
-            trackingMode.ScanArea(e.NewLocation, clear_focus: true);
+            GridMovement.PlayerWarped(sender, e);
+            ObjectTracker.GetLocationObjects(reset_focus: true);
         }
 
+        private void Input_ButtonsChanged(object sender, ButtonsChangedEventArgs e) {
 
-        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e) {
-            Boolean stardewAccessLoaded = helper.ModRegistry.IsLoaded("shoaib.stardewaccess");
-            if (stardewAccessLoaded) {
-                stardewAccess = helper.ModRegistry.GetApi<StardewAccessInterface>("shoaib.stardewaccess");
-            }
-            trackingMode.ScanArea(Game1.player.currentLocation);
-        }
+            if (Game1.activeClickableMenu != null) return;
 
-        private void OnButtonPressed(object sender, ButtonPressedEventArgs e) {
+            if(this.Config.ToggleGridMovementKey.JustPressed()) {
+                this.Config.GridMovementActive = !this.Config.GridMovementActive;
 
-            if (key_map.ContainsKey(e.Button) && Game1.activeClickableMenu is not GameMenu) {
-                if (Game1.player.controller != null) {
-                    ClearPathfindingController();
-                }
-            }
+                string output = "Grid Movement Status: " + (this.Config.GridMovementActive ? "Active" : "Inactive");
+                Output(output, true);
 
-            // ignore if player hasn't loaded a save yet, make sure no interface is open, and make sure player can move
-            if (!Context.IsWorldReady || Game1.activeClickableMenu != null || !Game1.player.CanMove)
-                return;
-
-            int direction = -1;
-
-            if (key_map.ContainsKey(e.Button)) {
-                direction = key_map[e.Button];
-            }
-
-            if (e.Button == Config.GridCenterPlayerKey) {
-                CenterPlayer();
-            }
-
-            if (e.Button == Config.MovementTypeToggle) {
-                grid_movement_active = !grid_movement_active;
-
-                if (stardewAccess != null) {
-                    if (grid_movement_active) {
-                        stardewAccess.Say("Activated Grid Movement", true);
-                    } else {
-                        stardewAccess.Say("Deactivated Grid Movement", true);
-                    }
-                }
-            }
-
-            if (direction != -1) {
-
-                if (grid_movement_active) {
-                    last_button = e.Button;
-                    HandleArrowMovement(direction);
-                }
-
-            }
-
-            trackingMode.OnButtonPressed(sender, e);
-
-        }
-
-        private void ClearPathfindingController() {
-            Game1.player.controller = null;
-            movingWithTracker = false;
-        }
-
-        private void CenterPlayer() {
-
-            var position = Game1.player.Position;
-
-            position.X = (int)Math.Round(position.X / Game1.tileSize) * Game1.tileSize;
-            position.Y = (int)Math.Round(position.Y / Game1.tileSize) * Game1.tileSize;
-
-            Game1.player.Position = position;
-
-        }
-
-        private bool hasCheckedBed = false;
-
-        private void HandleArrowMovement(int direction) {
-
-            //stop if player is using their tool, otherwise the player may glitch out.
-            if (Game1.player.UsingTool || this.is_warping) {
-                return;
-            }
-
-            //first, center player to current tile
-            CenterPlayer();
-
-            Game1.player.CanMove = false;
-
-            if (Game1.player.FacingDirection != direction) {
-                Game1.player.faceDirection(direction);
-                Game1.playSound("dwop");
-                return;
-            }
-
-            var position = Game1.player.Position;
-            var X = (int)Math.Round(position.X / Game1.tileSize);
-            var Y = (int)Math.Round(position.Y / Game1.tileSize);
-
-            switch (direction) {
-                case 0:
-                    Y -= 1;
-                    break;
-                case 1:
-                    X += 1;
-                    break;
-                case 2:
-                    Y += 1;
-                    break;
-                case 3:
-                    X -= 1;
-                    break;
-            }
-
-            position.X = X * Game1.tileSize;
-            position.Y = Y * Game1.tileSize;
-
-            var tile_vector = new Vector2(X, Y);
-
-            var location = Game1.player.currentLocation;
-
-            if (!IsColliding(tile_vector)) {
-                Game1.player.Position = position;
-                location.playTerrainSound(tile_vector);
-                Game1.player.CanMove = true;
-                hasCheckedBed = false;
             } else {
 
-                //Game1.currentLocation.performAction(new string { "LockedDoorWarp", null, null,  }, Game1.player, new Location(X, Y));
-
-                //Point warpPointTarget = location.getWarpPointTarget(new Point(X, Y));
-
-                Warp warp = location.isCollidingWithWarpOrDoor(new Microsoft.Xna.Framework.Rectangle((int)position.X, (int)position.Y, Game1.tileSize, Game1.tileSize));
-                if (warp != null) {
-
-                    if (location.checkAction(new Location((int)X, (int)Y), Game1.viewport, Game1.player)) {
-                        this.is_warping = true;
-                    } else {
-                        Game1.playSound("doorClose");
-                        Game1.player.warpFarmer(warp);
-                        this.is_warping = true;
-                    }
-
-                }
-
-                //check if player is trying to collide with an object
-                if (Game1.currentLocation.isObjectAtTile(X, Y)) {
-
-                    StardewValley.Object obj = Game1.currentLocation.getObjectAtTile(X, Y);
-                    String object_name = obj.DisplayName;
-
-                    console.Debug($"Check Object: {object_name}");
-
-                    if (object_name.ToLower().Contains("bed")) {
-                        if (hasCheckedBed == false) {
-                            Vector2 bed_position = obj.TileLocation;
-                            bed_position.Y += 1;
-                            bed_position *= Game1.tileSize;
-                            //bed_position.X += 50;
-                            Game1.player.Position = bed_position;
-                            location.createQuestionDialogue(Game1.content.LoadString("Strings\\Locations:FarmHouse_Bed_GoToSleep"), location.createYesNoResponses(), "Sleep");
-                            hasCheckedBed = true;
-                        }
-                    }
-
-                }
+                ObjectTracker.HandleKeys(sender, e);
 
             }
 
         }
 
-        public bool IsColliding(Vector2 tile_vector) {
+        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e) {
 
-            var location = Game1.player.currentLocation;
+            if (Game1.player.controller != null) {
 
-            int X = (int)tile_vector.X;
-            int Y = (int)tile_vector.Y;
+                if(this.Config.OTCancelAutoWalking.JustPressed()) {
+                    Game1.player.controller.endBehaviorFunction(Game1.player, Game1.currentLocation);
+                }
 
-            Boolean pass_feature_check = true;
-            Boolean force_pass = false;
-            if (location.resourceClumps.Count > 0) {
-                for (int i = 0; i < location.resourceClumps.Count; i++) {
-                    ResourceClump feature = location.resourceClumps[i];
+                this.Helper.Input.Suppress(e.Button);
+                return;
 
-                    if (feature.occupiesTile(X, Y)) {
-                        pass_feature_check = false;
+            }
+
+            if (GridMovement.is_warping == true) {
+                this.Helper.Input.Suppress(e.Button);
+            }
+
+            if (Game1.activeClickableMenu == null && !this.Config.GridMovementOverrideKey.IsDown() && e.Button.TryGetStardewInput(out InputButton button)) {
+                if (this.Config.GridMovementActive) {
+                    foreach (InputButton Button in Game1.options.moveUpButton) {
+                        if (button.Equals(Button)) {
+                            GridMovement.HandleGridMovement(0, Button);
+                            this.Helper.Input.Suppress(e.Button);
+                        }
                     }
-                }
-            }
-
-            //detect animal collision
-            List<FarmAnimal>? farmAnimals = null;
-            if (location is Farm) {
-                farmAnimals = (location as Farm).getAllFarmAnimals();
-            } else if (location is AnimalHouse) {
-                farmAnimals = (location as AnimalHouse).animals.Values.ToList();
-            }
-            if (farmAnimals != null) {
-                foreach (FarmAnimal animal in farmAnimals) {
-                    if (animal.getTileLocation() == tile_vector) {
-                        force_pass = true;
+                    foreach (InputButton Button in Game1.options.moveRightButton) {
+                        if (button.Equals(Button)) {
+                            GridMovement.HandleGridMovement(1, Button);
+                            this.Helper.Input.Suppress(e.Button);
+                        }
                     }
-                }
-            }
-
-            if (location.objects.Count() > 0 && location.objects.ContainsKey(tile_vector)) {
-                StardewValley.Object feature = location.objects[tile_vector];
-
-                if (feature.name.ToLower().Contains("gate")) {
-                    force_pass = true;
-                }
-            }
-
-            //check tile indexes?
-            int back_index = location.getTileIndexAt(X, Y, "Back");
-            string passable = location.doesTileHaveProperty(X, Y, "Passable", "Back");
-            //console.Debug();
-
-            if ((new[] { 107, 362, 1274, 1244, 737, 999, 963, 931, 609 }).Contains(back_index)) {
-                force_pass = true;
-                Game1.playSound("woodyStep");
-            }
-
-            if ((new[] { 405, 74, 75 }).Contains(back_index)) {
-                pass_feature_check = false;
-            }
-
-            if (location is IslandSouth) {
-                if (!(location as IslandSouth).westernTurtleMoved) {
-                    if (X == 3) {
-                        if (Enumerable.Range(10, 13).Contains(Y)) {
-                            stardewAccess.Say("Path is blocked by a giant turtle!", true);
-                            pass_feature_check = false;
+                    foreach (InputButton Button in Game1.options.moveDownButton) {
+                        if (button.Equals(Button)) {
+                            GridMovement.HandleGridMovement(2, Button);
+                            this.Helper.Input.Suppress(e.Button);
+                        }
+                    }
+                    foreach (InputButton Button in Game1.options.moveLeftButton) {
+                        if (button.Equals(Button)) {
+                            GridMovement.HandleGridMovement(3, Button);
+                            this.Helper.Input.Suppress(e.Button);
                         }
                     }
                 }
             }
 
-            bool answer = !(!location.isTileOccupiedIgnoreFloors(tile_vector) &&
-                location.isTilePassable(new Location(X, Y), Game1.viewport) &&
-                !location.isWaterTile(X, Y) &&
-                !location.isOpenWater(X, Y) &&
-                !location.isTileOccupiedForPlacement(tile_vector) &&
-                pass_feature_check ||
-                location.isCropAtTile(X, Y) ||
-                force_pass);
-
-            //console.Debug(answer.ToString() + " - " + back_index.ToString());
-            console.Debug($"Check {X},{Y} (BackIndex: {back_index}) | (Passable: {passable} | (Answer: {answer})");
-
-            return answer;
         }
 
-        private int reset_on_tick_count = 15;
-        private int held_for_ticks = 0;
-        private int moved_for_ticks = 0;
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e) {
 
-        private void UpdateTicked(object sender, UpdateTickedEventArgs e) {
-
-            if (!Context.IsWorldReady)
-                return;
-
-            if (last_button != null) {
-
-                var buttonState = this.Helper.Input.GetState((SButton)last_button);
-                if (buttonState == SButtonState.Held || buttonState == SButtonState.Pressed) {
-                    Game1.player.CanMove = false;
-                    held_for_ticks++;
-
-                    int tick_count = reset_on_tick_count;
-
-#if DEBUG
-                    var ctrlState = this.Helper.Input.GetState(SButton.LeftControl);
-                    if (ctrlState == SButtonState.Held) {
-                        tick_count /= 2;
-                    }
-#endif
-
-                    if (held_for_ticks > tick_count) {
-                        HandleArrowMovement(key_map[(SButton)last_button]);
-                        held_for_ticks = 0;
-                    }
-
-                } else {
-                    last_button = null;
-                    held_for_ticks = 0;
-                    Game1.player.CanMove = true;
-                }
-
-            }
-
-            if (movingWithTracker) {
-                Game1.player.UsingTool = false;
-                moved_for_ticks++;
-
-                if (moved_for_ticks > reset_on_tick_count) {
-                    if (Game1.activeClickableMenu == null) {
-                        Game1.currentLocation.playTerrainSound(Game1.player.getTileLocation());
-                    }
-                    moved_for_ticks = 0;
-                }
-            } else {
-                moved_for_ticks = 0;
-
-                if (trackingMode.controlled_npcs.Any()) {
-                    Task ignore = trackingMode.UnhaltNPCS();
-                }
-            }
-
-            if (trackingMode.controlled_npcs.Any() && Game1.player.controller != null && Game1.activeClickableMenu != null) {
-                Game1.player.controller = null;
-                movingWithTracker = false;
-                Task ignore = trackingMode.UnhaltNPCS();
-            }
-
-        }
-
-        private void OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e) {
-
-            if (!Context.IsWorldReady)
-                return;
-
-            if (Game1.player.CanMove || Game1.activeClickableMenu == null) {
-                this.is_warping = false;
-            }
+            this.Integrations = new ModIntegrations(this);
 
         }
 

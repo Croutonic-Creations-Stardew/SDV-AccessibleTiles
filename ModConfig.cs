@@ -1,39 +1,42 @@
-﻿using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
+﻿using StardewModdingAPI.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace AccessibleTiles {
-    /// <summary>The mod configuration model.</summary>
     public class ModConfig {
-        /*********
-        ** Accessors
-        *********/
-        /// <summary>The default values.</summary>
-        static ModConfig Defaults { get; } = new ModConfig();
 
-        /****
-         * * SETTINGS
-        ****/
-        public bool GridModeActiveByDefault = true;
+        /*
+        * Grid Movement Keys
+        */
+        public Boolean GridMovementActive { get; set; } = true;
 
-        /****
-        ** Keyboard buttons
-        ****/
-        /// <summary>The button which opens the menu.</summary>
-        public SButton GridCenterPlayerKey { get; set; } = SButton.Home;
-        public SButton GridUpKey { get; set; } = SButton.W;
-        public SButton GridRightKey { get; set; } = SButton.D;
-        public SButton GridDownKey { get; set; } = SButton.S;
-        public SButton GridLeftKey { get; set; } = SButton.A;
-        public SButton MovementTypeToggle { get; set; } = SButton.I;
+        public KeybindList ToggleGridMovementKey { get; set; } = KeybindList.Parse("I");
 
-        //tracker
-        public SButton TrackingModeRead { get; set; } = SButton.Home;
-        public SButton TrackingModeCycleUp { get; set; } = SButton.PageUp;
-        public SButton TrackingModeCycleDown { get; set; } = SButton.PageDown;
-        public SButton TrackingModeGetTile { get; set; } = SButton.End;
+        public KeybindList GridMovementOverrideKey { get; set; } = KeybindList.Parse("LeftControl");
 
-        public SButton TrackingToggleSortingMode { get; set; } = SButton.OemTilde;
+        /*
+         * Object Tracker Keys
+         */
+        public KeybindList OTCycleUpCategory { get; set; } = KeybindList.Parse("LeftControl + PageUp");
+        public KeybindList OTCycleDownCategory { get; set; } = KeybindList.Parse("LeftControl + PageDown");
+        public KeybindList OTCycleUpObject { get; set; } = KeybindList.Parse("PageUp");
+        public KeybindList OTCycleDownObject { get; set; } = KeybindList.Parse("PageDown");
 
+        public KeybindList OTMoveToSelectedObject { get; set; } = KeybindList.Parse("LeftControl + Home");
+        public KeybindList OTReadSelectedObject { get; set; } = KeybindList.Parse("Home");
 
-    }
+        public KeybindList OTReadSelectedObjectTileLocation { get; set; } = KeybindList.Parse("End");
+
+        public KeybindList OTCancelAutoWalking { get; set; } = KeybindList.Parse("Escape");
+
+        public KeybindList OTSwitchSortingMode { get; set; } = KeybindList.Parse("OemTilde");
+
+        public string OTReadSelectedObjectText { get; set; } = "{object} is at {objectX},{objectY}, player at {playerX},{playerY}";
+
+        public string OTReadSelectedObjectTileText { get; set; } = "{object} is at {objectX},{objectY}, player at {playerX},{playerY}";
+
+    }       
 }
