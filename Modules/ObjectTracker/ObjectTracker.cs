@@ -27,19 +27,29 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
         //stop player from moving too fast
         int msBetweenCheckingPathfindingController = 1000;
-        Timer timer = new Timer();
+        Timer checkPathingTimer = new Timer();
+
+        //stop player from moving too fast
+        Timer footstepTimer = new Timer();
 
         public ObjectTracker(ModEntry mod, ModConfig config) {
             this.Mod = mod;
             this.ModConfig = config;
 
             //set is_moving after x time to allow the next grid movement
-            timer.Interval = msBetweenCheckingPathfindingController;
-            timer.Elapsed += Timer_Elapsed;
+            checkPathingTimer.Interval = msBetweenCheckingPathfindingController;
+            checkPathingTimer.Elapsed += checkPathingTimer_Elapsed;
+
+            footstepTimer.Interval = mod.GridMovement.minMillisecondsBetweenSteps + 50;
+            footstepTimer.Elapsed += footstepTimer_Elapsed;
         }
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
-            this.Mod.Output("Check Pathfinder.", true);
+        private void footstepTimer_Elapsed(object sender, ElapsedEventArgs e) {
+            Farmer player = Game1.player;
+            player.currentLocation.playTerrainSound(player.getTileLocation());
+        }
+
+        private void checkPathingTimer_Elapsed(object sender, ElapsedEventArgs e) {
             if (Game1.player.controller != null && (Game1.activeClickableMenu == null || Game1.IsMultiplayer)) {
                 if (Game1.player.controller.timerSinceLastCheckPoint > 350) {
                     Game1.player.controller.endBehaviorFunction(Game1.player, Game1.currentLocation);
@@ -111,8 +121,9 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
                 this.Mod.Output($"Moving to {closestTile.Value.X},{closestTile.Value.Y}.", true);
                 LastTargetedTile = sObjectTile;
+                footstepTimer.Start();
 
-                timer.Start();
+                checkPathingTimer.Start();
                 player.controller = new PathFindController(player, Game1.currentLocation, closestTile.Value.ToPoint(), -1, (Character farmer, GameLocation location) => {
                     this.StopPathfinding();
                 });
@@ -128,11 +139,12 @@ namespace AccessibleTiles.Modules.ObjectTracker {
         private void StopPathfinding() {
 
             Farmer player = Game1.player;
+            footstepTimer.Stop();
 
             ReadCurrentlySelectedObject();
             Utility.FixCharacterMovement();
             player.controller = null;
-            timer.Stop();
+            checkPathingTimer.Stop();
 
             Task unhalt = UnhaltNPCS();
 

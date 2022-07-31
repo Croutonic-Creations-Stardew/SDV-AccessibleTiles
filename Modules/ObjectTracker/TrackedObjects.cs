@@ -37,14 +37,19 @@ namespace AccessibleTiles.Modules.ObjectTracker {
                 this.AddObjects(SpecialPointsObjects.GetObjects());
             }
 
-            TTCharacters CharacterObjects = new TTCharacters(this.Mod);
+            TTCharacters CharacterObjects = new TTCharacters();
             if (CharacterObjects.HasObjects()) {
                 this.AddObjects(CharacterObjects.GetObjects());
             }
 
-            TTEntrances EntranceObjects = new TTEntrances(this.Mod);
+            TTEntrances EntranceObjects = new TTEntrances();
             if (EntranceObjects.HasObjects()) {
                 this.AddObjects(EntranceObjects.GetObjects());
+            }
+
+            TTAnimals AnimalObjects = new TTAnimals();
+            if (AnimalObjects.HasObjects()) {
+                this.AddObjects(AnimalObjects.GetObjects());
             }
 
             if (sortAlphabetically) {

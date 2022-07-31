@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
     internal class TTEntrances : TileTrackerBase {
 
-        public TTEntrances(object? arg) : base(arg) {
+        public TTEntrances(object? arg = null) : base(arg) {
             
         }
 
-        public override void FindObjects(object? arg) {
+        public override void FindObjects(object? arg = null) {
 
             string category = "entrances";
             GameLocation location = Game1.player.currentLocation;

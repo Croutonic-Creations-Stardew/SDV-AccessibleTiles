@@ -10,7 +10,7 @@ using xTile.Dimensions;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace AccessibleTiles.Modules.GridMovement {
-    internal class GridMovement {
+    public class GridMovement {
 
         private readonly ModEntry Mod;
 
@@ -18,7 +18,7 @@ namespace AccessibleTiles.Modules.GridMovement {
         public Boolean is_moving = false;
 
         //stop player from moving too fast
-        int minMillisecondsBetweenSteps = 210;
+        public int minMillisecondsBetweenSteps = 210;
         Timer timer = new Timer();
 
         public GridMovement(ModEntry mod) {

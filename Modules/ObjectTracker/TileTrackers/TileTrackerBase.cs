@@ -12,11 +12,11 @@ namespace AccessibleTiles.Modules.ObjectTracker.Categories {
 
         public SortedList<string, Dictionary<string, SpecialObject>> Objects = new();
 
-        public TileTrackerBase(object? arg) {
+        public TileTrackerBase(object? arg = null) {
             this.FindObjects(arg);
         }
 
-        public virtual void FindObjects(object? arg) {
+        public virtual void FindObjects(object? arg = null) {
             
         }
 

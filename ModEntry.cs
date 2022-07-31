@@ -13,7 +13,7 @@ namespace AccessibleTiles {
         public ModConfig Config;
         public ModIntegrations Integrations;
 
-        private GridMovement GridMovement;
+        public GridMovement GridMovement;
         private ObjectTracker ObjectTracker;
 
         public Boolean IsUsingPathfinding = false;
@@ -70,7 +70,7 @@ namespace AccessibleTiles {
 
         private void Player_Warped(object sender, WarpedEventArgs e) {
             GridMovement.PlayerWarped(sender, e);
-            ObjectTracker.GetLocationObjects();
+            ObjectTracker.GetLocationObjects(reset_focus: true);
         }
 
         private void Input_ButtonsChanged(object sender, ButtonsChangedEventArgs e) {
