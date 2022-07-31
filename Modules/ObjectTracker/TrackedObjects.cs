@@ -52,6 +52,11 @@ namespace AccessibleTiles.Modules.ObjectTracker {
                 this.AddObjects(AnimalObjects.GetObjects());
             }
 
+            TTCrops CropObjects = new TTCrops();
+            if (CropObjects.HasObjects()) {
+                this.AddObjects(CropObjects.GetObjects());
+            }
+
             if (sortAlphabetically) {
                 foreach (var cat in Objects) {
                     var ordered = cat.Value.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);

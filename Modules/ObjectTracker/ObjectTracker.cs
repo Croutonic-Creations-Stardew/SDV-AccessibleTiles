@@ -70,6 +70,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             } else if (ModConfig.OTCycleDownObject.JustPressed()) {
                 CycleObjects();
             } else if (ModConfig.OTReadSelectedObject.JustPressed()) {
+                GetLocationObjects(reset_focus: false);
                 ReadCurrentlySelectedObject();
             } else if(ModConfig.OTSwitchSortingMode.JustPressed()) {
                 this.sortByProxy = !this.sortByProxy;
@@ -228,7 +229,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
                 suffix_text = ", " + suffix_text;
             }
 
-            this.Mod.Output($"{SelectedCategory}, Object: {SelectedObject}" + suffix_text, true);
+            this.Mod.Output($"{SelectedCategory}, {SelectedObject}" + suffix_text, true);
 
         }
 
@@ -250,7 +251,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
                 suffix_text = ", " + suffix_text;
             }
 
-            this.Mod.Output($"{SelectedObject}, Category: {SelectedCategory}" + suffix_text, true);
+            this.Mod.Output($"{SelectedObject}, {SelectedCategory}" + suffix_text, true);
 
         }
 
@@ -292,13 +293,17 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             this.TrackedObjects = tracked_objects;
 
             if(!reset_focus) {
-                if(!tracked_objects.GetObjects().ContainsKey(SelectedCategory) || !tracked_objects.GetObjects()[SelectedCategory].ContainsKey(SelectedObject)) {
+                if(!tracked_objects.GetObjects().ContainsKey(SelectedCategory)) {
                     reset_focus = true;
                 }
             }
 
             if(reset_focus) {
                 this.SetDefaultCategoryAndFocusedObject();
+            }
+
+            if(!tracked_objects.GetObjects()[SelectedCategory].ContainsKey(SelectedObject) && tracked_objects.GetObjects().ContainsKey(SelectedCategory)) {
+                this.SetFocusedObjectToFirstInCategory();
             }
 
         }

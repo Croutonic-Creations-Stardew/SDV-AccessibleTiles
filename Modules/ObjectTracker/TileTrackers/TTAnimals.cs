@@ -31,13 +31,14 @@ namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
             if (farmAnimals != null) {
                 foreach (FarmAnimal animal in farmAnimals) {
 
-                    string mood = animal.getMoodMessage();
-                    string mood_text = "";
-                    if (mood.ToLower().Contains("thin")) {
-                        mood_text = " the Hungry ";
+                    string moodMessage = animal.getMoodMessage();
+
+                    string is_hungry = "";
+                    if (moodMessage.ToLower().Contains("thin")) {
+                        is_hungry = "Hungry ";
                     }
 
-                    AddFocusableObject(category, $"{animal.displayName} {mood_text}{animal.shortDisplayType()}", animal.getTileLocation());
+                    AddFocusableObject(category, $"{animal.displayName}, {is_hungry}{animal.displayType}, {animal.age}", animal.getTileLocation());
                 }
             }
 
