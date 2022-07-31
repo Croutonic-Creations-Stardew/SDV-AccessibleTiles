@@ -37,14 +37,18 @@ namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
             }
 
             foreach (Warp point in location.warps) {
-                string name = point.TargetName;
-                if (name.ToLower() == "desert") continue;
+                string str = point.TargetName;
+                if (str.ToLower() == "desert") continue;
 
-                if (added_names.ContainsKey(name)) {
+                if (added_names.ContainsKey(str)) {
+
+                    //make sure this warp is not directly next to an existing one
 
                     bool add = true;
-                    int number = added_names[name];
 
+                    int number = added_names[str];
+
+                    string name = str;
                     if (number > 1) {
                         name += $" {number}";
                     }
@@ -62,26 +66,23 @@ namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
                     }
 
                     if (add) {
-                        added_names[name]++;
-                        name += $" {added_names[name]}";
-                        AddFocusableObject(category, name, new(point.X, point.Y));
+                        added_names[str]++;
+                        str += $" {added_names[str]}";
+                        AddFocusableObject(category, str, new(point.X, point.Y));
                     }
 
                 } else {
-                    added_names.Add(name, 1);
-                    AddFocusableObject(category, name, new(point.X, point.Y));
+                    added_names.Add(str, 1);
+                    AddFocusableObject(category, str, new(point.X, point.Y));
                 }
 
-                if (name.ToLower().Contains("sunroom")) {
+                if (str.ToLower().Contains("sunroom")) {
 
-                    Vector2 pathfind_override = this.Objects[category][name].TileLocation;
+                    Vector2 pathfind_override = this.Objects[category][str].TileLocation;
                     pathfind_override.Y += 1;
 
-                    this.Objects[category][name].PathfindingOverride = pathfind_override;
-
+                    this.Objects[category][str].PathfindingOverride = pathfind_override;
                 }
-
-
             }
 
             base.FindObjects(arg);
