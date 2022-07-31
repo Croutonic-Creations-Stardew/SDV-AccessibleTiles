@@ -6,11 +6,23 @@
       "yPos": 16
     }
   ],
-  "Forest": [
+  "Desert": [
     {
       "name": "fishing spot",
+      "xPos": 9,
+      "yPos": 11
+    }
+  ],
+  "Forest": [
+    {
+      "name": "pond fishing spot",
       "xPos": 95,
       "yPos": 51
+    },
+    {
+      "name": "river fishing spot",
+      "xPos": 106,
+      "yPos": 37
     }
   ],
   "Mountain": [
@@ -18,6 +30,13 @@
       "name": "fishing spot",
       "xPos": 61,
       "yPos": 37
+    }
+  ],
+  "Woods": [
+    {
+      "name": "fishing spot",
+      "xPos": 12,
+      "yPos": 26
     }
   ],
   "ScienceHouse": [
