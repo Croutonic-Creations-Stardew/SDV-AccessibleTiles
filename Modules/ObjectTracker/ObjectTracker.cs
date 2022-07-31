@@ -60,7 +60,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             } else if(ModConfig.OTSwitchSortingMode.JustPressed()) {
                 this.sortByProxy = !this.sortByProxy;
 
-                this.Mod.Output("Sort By Proxy: " + (sortByProxy ? "Enabled" : "Disabled"), true);
+                this.Mod.Output("Sort By Proximity: " + (sortByProxy ? "Enabled" : "Disabled"), true);
                 GetLocationObjects(reset_focus: false);
 
             }

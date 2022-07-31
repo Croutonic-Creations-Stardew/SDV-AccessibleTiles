@@ -18,7 +18,7 @@ namespace AccessibleTiles.Modules.GridMovement {
         public Boolean is_moving = false;
 
         //stop player from moving too fast
-        int minMillisecondsBetweenSteps = 150;
+        int minMillisecondsBetweenSteps = 250;
         Timer timer = new Timer();
 
         public GridMovement(ModEntry mod) {

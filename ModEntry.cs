@@ -58,7 +58,7 @@ namespace AccessibleTiles {
                 
 
                 SButton button = LastGridMovementButtonPressed.Value.ToSButton();
-                if (Game1.activeClickableMenu == null && !GridMovement.is_moving && (this.Helper.Input.IsDown(button) || this.Helper.Input.IsSuppressed(button))) {
+                if (Game1.activeClickableMenu == null && !GridMovement.is_moving && !this.Config.GridMovementOverrideKey.IsDown()  && (this.Helper.Input.IsDown(button) || this.Helper.Input.IsSuppressed(button))) {
                     GridMovement.HandleGridMovement(LastGridMovementDirection.Value, LastGridMovementButtonPressed.Value);
                 }
             }
