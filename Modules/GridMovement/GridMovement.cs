@@ -37,7 +37,7 @@ namespace AccessibleTiles.Modules.GridMovement {
 
         public void HandleGridMovement(int direction, InputButton pressedButton) {
 
-            if (this.is_warping == true || is_moving || Game1.IsChatting) return;
+            if (this.is_warping == true || is_moving || Game1.IsChatting || !Game1.player.canMove) return;
 
             is_moving = true;
             timer.Start();

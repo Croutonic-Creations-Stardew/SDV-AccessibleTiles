@@ -18,8 +18,12 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
         private TrackedObjects TrackedObjects;
 
+        private Dictionary<NPC, int> haltedNPCs = new();
+        private Vector2? LastTargetedTile = null;
+
         public string SelectedCategory;
         public string SelectedObject;
+
 
         //stop player from moving too fast
         int msBetweenCheckingPathfindingController = 1000;
@@ -66,6 +70,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             }
 
             if (ModConfig.OTMoveToSelectedObject.JustPressed()) {
+                GetLocationObjects(reset_focus: false);
                 MoveToCurrentlySelectedObject();
             } else if (ModConfig.OTReadSelectedObjectTileLocation.JustPressed()) {
                 GetLocationObjects(reset_focus: false);
@@ -99,11 +104,17 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
             if (closestTile != null) {
 
+                if(sObject.character != null) {
+                    haltedNPCs.Add(sObject.character, sObject.character.speed);
+                    sObject.character.speed = 0;
+                }
+
                 this.Mod.Output($"Moving to {closestTile.Value.X},{closestTile.Value.Y}.", true);
+                LastTargetedTile = sObjectTile;
 
                 timer.Start();
                 player.controller = new PathFindController(player, Game1.currentLocation, closestTile.Value.ToPoint(), -1, (Character farmer, GameLocation location) => {
-                    this.StopPathfinding(Utility.GetDirection(playerTile, sObjectTile));
+                    this.StopPathfinding();
                 });
 
             } else {
@@ -114,28 +125,41 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
         }
 
-        private void StopPathfinding(string faceDirection) {
+        private void StopPathfinding() {
 
             Farmer player = Game1.player;
-
-            if (faceDirection == "North") {
-                player.faceDirection(0);
-            }
-            if (faceDirection == "East") {
-                player.faceDirection(1);
-            }
-            if (faceDirection == "South") {
-                player.faceDirection(2);
-            }
-            if (faceDirection == "West") {
-                player.faceDirection(3);
-            }
 
             ReadCurrentlySelectedObject();
             Utility.FixCharacterMovement();
             player.controller = null;
             timer.Stop();
 
+            Task unhalt = UnhaltNPCS();
+
+            if(LastTargetedTile != null) {
+                string faceDirection = Utility.GetDirection(player.getTileLocation(), LastTargetedTile.Value);
+                if (faceDirection == "North") {
+                    player.faceDirection(0);
+                }
+                if (faceDirection == "East") {
+                    player.faceDirection(1);
+                }
+                if (faceDirection == "South") {
+                    player.faceDirection(2);
+                }
+                if (faceDirection == "West") {
+                    player.faceDirection(3);
+                }
+            }
+
+        }
+
+        private async Task UnhaltNPCS() {
+            await Task.Delay(3000);
+            foreach (var npcs in haltedNPCs) {
+                npcs.Key.speed = npcs.Value;
+            }
+            haltedNPCs.Clear();
         }
 
         private void ReadCurrentlySelectedObject(bool readTileOnly = false) {

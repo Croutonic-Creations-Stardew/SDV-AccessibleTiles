@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
     internal class TTStardewAccess : TileTrackerBase {
 
+        private string[] ignored_categories = { "farmer" };
+
         public TTStardewAccess(object? arg) : base(arg) {
             
         }
@@ -26,8 +28,9 @@ namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
              */
             foreach (var tile in scannedTiles) {
 
-                //ignore some of stardew access categories
-                if (tile.Value.category == "animal") continue;
+                string category = tile.Value.category;
+
+                if (ignored_categories.Contains(category)) continue;
 
                 AddFocusableObject(tile.Value.category, tile.Value.name, tile.Key);
             }
