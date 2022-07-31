@@ -18,7 +18,7 @@ namespace AccessibleTiles.Modules.GridMovement {
         public Boolean is_moving = false;
 
         //stop player from moving too fast
-        int minMillisecondsBetweenSteps = 250;
+        int minMillisecondsBetweenSteps = 210;
         Timer timer = new Timer();
 
         public GridMovement(ModEntry mod) {
@@ -74,7 +74,6 @@ namespace AccessibleTiles.Modules.GridMovement {
             }
 
             Mod.Output($"Move To: {tileLocation.ToString()}");
-            player.CanMove = false;
 
             Warp warp = location.isCollidingWithWarpOrDoor(new Microsoft.Xna.Framework.Rectangle((int)tileLocation.X * Game1.tileSize, (int)tileLocation.Y * Game1.tileSize, Game1.tileSize, Game1.tileSize));
             if (warp != null) {
@@ -89,20 +88,19 @@ namespace AccessibleTiles.Modules.GridMovement {
                     this.is_warping = true;
                 }
 
-                player.CanMove = true;
-                return;
+            } else {
+
+                PathFindController pathfinder = new PathFindController(player, location, tileLocation.ToPoint(), direction);
+                if (pathfinder.pathToEndPoint != null) {
+                    //valid point
+                    player.Position = tileLocation * Game1.tileSize;
+                    location.playTerrainSound(tileLocation);
+
+                }
 
             }
 
-            PathFindController pathfinder = new PathFindController(player, location, tileLocation.ToPoint(), direction);
-            if(pathfinder.pathToEndPoint != null) {
-                //valid point
-                player.Position = tileLocation * Game1.tileSize;
-                player.CanMove = true;
-                location.playTerrainSound(tileLocation);
-                CenterPlayer();
-
-            }
+            CenterPlayer();
 
         }
 

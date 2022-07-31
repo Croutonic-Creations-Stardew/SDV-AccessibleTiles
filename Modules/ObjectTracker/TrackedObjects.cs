@@ -42,6 +42,11 @@ namespace AccessibleTiles.Modules.ObjectTracker {
                 this.AddObjects(CharacterObjects.GetObjects());
             }
 
+            TTEntrances EntranceObjects = new TTEntrances(this.Mod);
+            if (EntranceObjects.HasObjects()) {
+                this.AddObjects(EntranceObjects.GetObjects());
+            }
+
             if (sortAlphabetically) {
                 foreach (var cat in Objects) {
                     var ordered = cat.Value.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);

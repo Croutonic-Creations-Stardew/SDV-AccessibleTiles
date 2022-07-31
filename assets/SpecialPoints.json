@@ -6,6 +6,20 @@
       "yPos": 16
     }
   ],
+  "Forest": [
+    {
+      "name": "fishing spot",
+      "xPos": 95,
+      "yPos": 51
+    }
+  ],
+  "Mountain": [
+    {
+      "name": "fishing spot",
+      "xPos": 61,
+      "yPos": 37
+    }
+  ],
   "ScienceHouse": [
     {
       "name": "Robin's Woodpile",
@@ -36,7 +50,7 @@
   ],
   "WitchWarpCave": [
     {
-      "name": "Teleporation Rune",
+      "name": "Teleportation Rune",
       "xPos": 4,
       "yPos": 5
     }
@@ -48,7 +62,7 @@
       "yPos": 42
     },
     {
-      "name": "WitchHut",
+      "name": "Witch's Hut",
       "xPos": 20,
       "yPos": 20
     }
@@ -56,18 +70,21 @@
   "SandyHouse": [
     {
       "name": "Shop Counter",
+      "category_override": "interactable",
       "xPos": 2,
       "yPos": 6
     },
     {
-      "name": "Casino Entrance",
+      "name": "Casino",
+      "category_override": "entrance",
       "xPos": 17,
       "yPos": 1
     }
   ],
   "SkullCave": [
     {
-      "name": "Skull Cavern Entrance",
+      "name": "Skull Cavern door",
+      "category_override": "door",
       "xPos": 3,
       "yPos": 3
     }
@@ -75,26 +92,30 @@
   "WitchHut": [
     {
       "name": "Dark Shrine of Memory",
+      "category_override": "shrine",
       "xPos": 7,
       "yPos": 5
     },
     {
       "name": "Dark Shrine of Night Terrors",
+      "category_override": "shrine",
       "xPos": 12,
       "yPos": 6
     },
     {
       "name": "Dark Shrine of Selfishness",
+      "category_override": "shrine",
       "xPos": 2,
       "yPos": 6
     },
     {
-      "name": "Teleportation Rune (Wizard's Basement)",
+      "name": "Teleportation Rune",
+      "category_override": "entrances",
       "xPos": 11,
       "yPos": 11
     },
     {
-      "name": "Magic Ink Location",
+      "name": "Magic Ink",
       "xPos": 4,
       "yPos": 12,
       "requiresQuest": 28
@@ -103,55 +124,61 @@
   "Town": [
     {
       "name": "Shadow Guy's Hiding Bush",
+      "category_override": "bush",
+      "extraChecksHook": 1,
       "xPos": 28,
-      "yPos": 13,
-      "extraChecksHook": 1
+      "yPos": 13
     },
     {
-      "category_override": "trash cans",
+      "name": "bridge fishing spot",
+      "xPos": 94,
+      "yPos": 10
+    },
+    {
       "name": "Stardew Saloon",
+      "category_override": "trash cans",
       "xPos": 47,
       "yPos": 70
     },
     {
-      "category_override": "trash cans",
       "name": "1 River Road",
+      "category_override": "trash cans",
       "xPos": 52,
       "yPos": 63
     },
     {
-      "category_override": "trash cans",
       "name": "Mayor's Manor",
+      "category_override": "trash cans",
       "xPos": 56,
       "yPos": 86
     },
     {
-      "category_override": "trash cans",
       "name": "1 Willow Lane",
+      "category_override": "trash cans",
       "xPos": 13,
       "yPos": 86
     },
     {
-      "category_override": "trash cans",
       "name": "2 Willow Lane",
+      "category_override": "trash cans",
       "xPos": 19,
       "yPos": 89
     },
     {
-      "category_override": "trash cans",
       "name": "Blacksmith",
+      "category_override": "trash cans",
       "xPos": 97,
       "yPos": 80
     },
     {
-      "category_override": "trash cans",
       "name": "Museum",
+      "category_override": "trash cans",
       "xPos": 108,
       "yPos": 91
     },
     {
-      "category_override": "trash cans",
       "name": "Joja Mart",
+      "category_override": "trash cans",
       "xPos": 110,
       "yPos": 56
     }
@@ -163,12 +190,13 @@
       "yPos": 36
     },
     {
-      "name": "Empty Rainbow Shell Crate",
+      "name": "Empty Crate",
       "xPos": 45,
       "yPos": 40
     },
     {
-      "name": "Witch Cave Entrance",
+      "name": "Witch's Cave",
+      "category_override": "entrance",
       "xPos": 54,
       "yPos": 35
     }
@@ -183,14 +211,31 @@
   "Beach": [
     {
       "name": "Haley's Bracelet",
+      "extraChecksHook": 2,
       "xPos": 53,
-      "yPos": 8,
-      "extraChecksHook": 2
+      "yPos": 8
     },
     {
       "name": "Willy's Barrel",
       "xPos": 37,
       "yPos": 33
+    },
+    {
+      "name": "west fishing spot",
+      "xPos": 11,
+      "yPos": 40
+    },
+    {
+      "name": "east fishing spot",
+      "xPos": 87,
+      "yPos": 41
+    }
+  ],
+  "Submarine": [
+    {
+      "name": "fishing spot",
+      "xPos": 8,
+      "yPos": 11
     }
   ]
 }

@@ -10,7 +10,7 @@ using StardewValley;
 namespace AccessibleTiles.Modules.ObjectTracker.Categories {
     internal class TileTrackerBase {
 
-        private SortedList<string, Dictionary<string, SpecialObject>> Objects = new();
+        public SortedList<string, Dictionary<string, SpecialObject>> Objects = new();
 
         public TileTrackerBase(object? arg) {
             this.FindObjects(arg);
