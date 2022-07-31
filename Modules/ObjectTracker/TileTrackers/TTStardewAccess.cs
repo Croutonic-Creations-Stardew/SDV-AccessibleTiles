@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
     internal class TTStardewAccess : TileTrackerBase {
 
-        private string[] ignored_categories = { "farmer", "animals" };
+        private string[] ignored_categories = { "farmer", "animals", "npc" };
 
         public TTStardewAccess(object? arg) : base(arg) {
             
