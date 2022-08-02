@@ -40,9 +40,25 @@ namespace AccessibleTiles.Modules.ObjectTracker.Categories {
                 sObject.character = character;
             }
 
-            if (!Objects.GetValueOrDefault(category).ContainsKey(name))
-                Objects.GetValueOrDefault(category).Add(name, sObject);
+            if(Objects[category].ContainsKey(name)) {
+                sObject = GetClosest(sObject, Objects[category][name]);
+            }
 
+            Objects[category][name] = sObject;
+
+        }
+
+        public SpecialObject GetClosest(SpecialObject item1, SpecialObject item2) {
+
+            Vector2 player_tile = Game1.player.getTileLocation();
+
+            double collide_distance = Utility.GetDistance(player_tile, item2.TileLocation);
+            double new_distance = Utility.GetDistance(player_tile, item1.TileLocation);
+
+            if (new_distance < collide_distance) {
+                return item1;
+            }
+            return item2;
         }
 
     }

@@ -13,7 +13,7 @@ namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
     internal class TTAnimals : TileTrackerBase {
 
         public TTAnimals(object? arg = null) : base(arg) {
-            
+
         }
 
         public override void FindObjects(object? arg = null) {
@@ -24,22 +24,26 @@ namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
             List<FarmAnimal>? farmAnimals = null;
 
             if (location is Farm)
-                farmAnimals = (location as Farm).getAllFarmAnimals();
+                farmAnimals = (location as Farm).animals.Values.ToList();
             else if (location is AnimalHouse)
                 farmAnimals = (location as AnimalHouse).animals.Values.ToList();
 
             if (farmAnimals != null) {
+
                 foreach (FarmAnimal animal in farmAnimals) {
+                    if(animal != null) {
 
-                    string moodMessage = animal.getMoodMessage();
+                        string moodMessage = animal.getMoodMessage();
 
-                    string is_hungry = "";
-                    if (moodMessage.ToLower().Contains("thin")) {
-                        is_hungry = "Hungry ";
+                        string is_hungry = "";
+                        if (moodMessage.ToLower().Contains("thin")) {
+                            is_hungry = "Hungry ";
+                        }
+
+                        AddFocusableObject(category, $"{animal.displayName}, {is_hungry}{animal.displayType}, {animal.age}", animal.getTileLocation());
                     }
-
-                    AddFocusableObject(category, $"{animal.displayName}, {is_hungry}{animal.displayType}, {animal.age}", animal.getTileLocation());
                 }
+
             }
 
             base.FindObjects(arg);

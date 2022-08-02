@@ -51,8 +51,9 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
         private void checkPathingTimer_Elapsed(object sender, ElapsedEventArgs e) {
             if (Game1.player.controller != null && (Game1.activeClickableMenu == null || Game1.IsMultiplayer)) {
-                if (Game1.player.controller.timerSinceLastCheckPoint > 350) {
+                if (Game1.player.controller.timerSinceLastCheckPoint > 500) {
                     Game1.player.controller.endBehaviorFunction(Game1.player, Game1.currentLocation);
+
                     GetLocationObjects(reset_focus: false);
                     this.Mod.Output("Pathfinding forcibly stopped. Took too long to reach checkpoint.", true);
                 }
@@ -90,13 +91,19 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
         }
 
+        private Boolean IsFocusValid() {
+            SortedList<string, Dictionary<string, SpecialObject>> objects = TrackedObjects.GetObjects();
+            if (objects.ContainsKey(SelectedCategory) && objects[SelectedCategory].ContainsKey(SelectedObject)) {
+                return true;
+            }
+            return false;
+        }
+
         private void MoveToCurrentlySelectedObject() {
 
             this.Mod.Output($"Attempt pathfinding.", true);
 
-            SortedList<string, Dictionary<string, SpecialObject>> objects = TrackedObjects.GetObjects();
-
-            if (objects.ContainsKey(SelectedCategory) && objects[SelectedCategory].ContainsKey(SelectedObject)) {
+            if(this.IsFocusValid()) {
                 ReadCurrentlySelectedObject();
             }
 
@@ -120,7 +127,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
                     sObject.character.speed = 0;
                 }
 
-                this.Mod.Output($"Moving to {closestTile.Value.X},{closestTile.Value.Y}.", true);
+                this.Mod.Output($"Moving to {closestTile.Value.X}-{closestTile.Value.Y}.", true);
                 LastTargetedTile = sObjectTile;
                 footstepTimer.Start();
 
@@ -207,7 +214,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             sb.Replace("{playerX}", $"{playerTile.X}");
             sb.Replace("{playerY}", $"{playerTile.Y}");
             sb.Replace("{direction}", $"{direction}");
-            sb.Replace("{distance}", $"{distance} tiles");
+            sb.Replace("{distance}", $"{distance}");
 
             return sb.ToString().ToLower();
         }

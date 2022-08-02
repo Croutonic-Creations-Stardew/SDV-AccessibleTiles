@@ -37,24 +37,28 @@ namespace AccessibleTiles.Modules.GridMovement {
 
         public void HandleGridMovement(int direction, InputButton pressedButton) {
 
+            Farmer player = Game1.player;
+            GameLocation location = Game1.currentLocation;
+
+            this.timer.Interval = minMillisecondsBetweenSteps - (player.addedSpeed * (minMillisecondsBetweenSteps / 9));
+
+            this.Mod.LastGridMovementButtonPressed = pressedButton;
+            this.Mod.LastGridMovementDirection = direction;
+
+            if (Game1.player.FacingDirection != direction) {
+                Game1.player.faceDirection(direction);
+                Game1.playSound("dwop");
+                is_moving = true;
+                timer.Start();
+                return;
+            }
+
             if (this.is_warping == true || is_moving || Game1.IsChatting || !Game1.player.canMove) return;
 
             is_moving = true;
             timer.Start();
 
-            this.Mod.LastGridMovementButtonPressed = pressedButton;
-            this.Mod.LastGridMovementDirection = direction;
-
             Mod.Output($"Move Direction: {direction}");
-
-            Farmer player = Game1.player;
-            GameLocation location = Game1.currentLocation;
-
-            if (Game1.player.FacingDirection != direction) {
-                Game1.player.faceDirection(direction);
-                Game1.playSound("dwop");
-                return;
-            }
 
             Vector2 tileLocation = player.getTileLocation();
 
@@ -73,7 +77,7 @@ namespace AccessibleTiles.Modules.GridMovement {
                     break;
             }
 
-            Mod.Output($"Move To: {tileLocation.ToString()}");
+            Mod.Output($"Move To: {tileLocation}");
 
             Warp warp = location.isCollidingWithWarpOrDoor(new Microsoft.Xna.Framework.Rectangle((int)tileLocation.X * Game1.tileSize, (int)tileLocation.Y * Game1.tileSize, Game1.tileSize, Game1.tileSize));
             if (warp != null) {

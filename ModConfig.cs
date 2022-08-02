@@ -34,9 +34,9 @@ namespace AccessibleTiles {
 
         public KeybindList OTSwitchSortingMode { get; set; } = KeybindList.Parse("OemTilde");
 
-        public string OTReadSelectedObjectText { get; set; } = "{object} is at {objectX},{objectY}, player at {playerX},{playerY}";
+        public string OTReadSelectedObjectText { get; set; } = "{object} is {direction} {distance} at {objectX}-{objectY}, player at {playerX}-{playerY}";
 
-        public string OTReadSelectedObjectTileText { get; set; } = "{object} is at {objectX},{objectY}, player at {playerX},{playerY}";
+        public string OTReadSelectedObjectTileText { get; set; } = "{object} at {objectX}-{objectY}, player at {playerX}-{playerY}";
 
     }       
 }

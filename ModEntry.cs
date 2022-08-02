@@ -5,6 +5,7 @@ using AccessibleTiles.Modules.GridMovement;
 using StardewValley;
 using System;
 using AccessibleTiles.Modules.ObjectTracker;
+using Microsoft.Xna.Framework.Input;
 
 namespace AccessibleTiles {
     /// <summary>The mod entry point.</summary>
@@ -54,8 +55,6 @@ namespace AccessibleTiles {
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e) {
             if(LastGridMovementButtonPressed != null) {
-
-                
 
                 SButton button = LastGridMovementButtonPressed.Value.ToSButton();
                 if (Game1.activeClickableMenu == null && !GridMovement.is_moving && !this.Config.GridMovementOverrideKey.IsDown()  && (this.Helper.Input.IsDown(button) || this.Helper.Input.IsSuppressed(button))) {
@@ -108,28 +107,32 @@ namespace AccessibleTiles {
                 this.Helper.Input.Suppress(e.Button);
             }
 
-            if (Game1.activeClickableMenu == null && !this.Config.GridMovementOverrideKey.IsDown() && e.Button.TryGetStardewInput(out InputButton button)) {
+            e.Button.TryGetStardewInput(out InputButton keyboardButton);
+            e.Button.TryGetController(out Buttons controllerButton);
+
+            if (Game1.activeClickableMenu == null && !this.Config.GridMovementOverrideKey.IsDown()) {
+
                 if (this.Config.GridMovementActive) {
                     foreach (InputButton Button in Game1.options.moveUpButton) {
-                        if (button.Equals(Button)) {
+                        if (keyboardButton.Equals(Button) || controllerButton.Equals(Buttons.DPadUp)) {
                             GridMovement.HandleGridMovement(0, Button);
                             this.Helper.Input.Suppress(e.Button);
                         }
                     }
                     foreach (InputButton Button in Game1.options.moveRightButton) {
-                        if (button.Equals(Button)) {
+                        if (keyboardButton.Equals(Button) || controllerButton.Equals(Buttons.DPadRight)) {
                             GridMovement.HandleGridMovement(1, Button);
                             this.Helper.Input.Suppress(e.Button);
                         }
                     }
                     foreach (InputButton Button in Game1.options.moveDownButton) {
-                        if (button.Equals(Button)) {
+                        if (keyboardButton.Equals(Button) || controllerButton.Equals(Buttons.DPadDown)) {
                             GridMovement.HandleGridMovement(2, Button);
                             this.Helper.Input.Suppress(e.Button);
                         }
                     }
                     foreach (InputButton Button in Game1.options.moveLeftButton) {
-                        if (button.Equals(Button)) {
+                        if (keyboardButton.Equals(Button) || controllerButton.Equals(Buttons.DPadLeft)) {
                             GridMovement.HandleGridMovement(3, Button);
                             this.Helper.Input.Suppress(e.Button);
                         }

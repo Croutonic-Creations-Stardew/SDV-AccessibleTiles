@@ -40,7 +40,9 @@ namespace AccessibleTiles.Modules.ObjectTracker.TileTrackers {
                         }
                     } else {
                         if (dirt.fertilizer.Value == HoeDirt.noFertilizer) {
-                            names.Add("Unfertilized Soil");
+                            names.Add("Unfertilized Unplanted Soil");
+                        } else {
+                            names.Add("Fertilized Unplanted Soil");
                         }
                     }
                     for (int i = 0; i < names.Count; i++) {
