@@ -5,6 +5,6 @@
   "Description": "Moved the player based on the tile grid, and track nearby objects and interactables",
   "UniqueID": "GrumpyCrouton.AccessibleTiles",
   "EntryDll": "AccessibleTiles.dll",
-  "MinimumApiVersion": "3.0.0",
+  "MinimumApiVersion": "3.0.1",
   "UpdateKeys": [ "Nexus:10755" ]
 }
