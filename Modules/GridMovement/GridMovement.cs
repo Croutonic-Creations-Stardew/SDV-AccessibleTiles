@@ -32,6 +32,11 @@ namespace AccessibleTiles.Modules.GridMovement {
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e) {
             is_moving = false;
+
+            //this is called if it hasn't already naturally been called by the game so the player doesn't freeze if the warp is unsuccessful
+            if(is_warping) {
+                this.HandleFinishedWarping(true);
+            }
             timer.Stop();
         }
 
@@ -85,9 +90,17 @@ namespace AccessibleTiles.Modules.GridMovement {
                 Mod.Output("Collides with Warp or Door");
 
                 if (location.checkAction(new Location((int)tileLocation.X * Game1.tileSize, (int)tileLocation.Y * Game1.tileSize), Game1.viewport, Game1.player)) {
-                    this.is_warping = true;
+                    timer.Stop();
                 } else {
-                    Game1.playSound("doorClose");
+
+                    //repurpose timer to wait a short period to prevent the player from spam warping
+                    //this prevents the door sound from going off multiple times
+                    //it also prevents the player from being locked up if a warp was unsuccessful
+                    timer.Stop();
+                    timer.Interval = 1000;
+                    timer.Start();
+
+                    Game1.playSound("doorOpen");
                     Game1.player.warpFarmer(warp);
                     this.is_warping = true;
                 }
@@ -99,6 +112,7 @@ namespace AccessibleTiles.Modules.GridMovement {
                     //valid point
                     player.Position = tileLocation * Game1.tileSize;
                     location.playTerrainSound(tileLocation);
+                    this.CenterPlayer();
 
                 }
 
@@ -109,8 +123,22 @@ namespace AccessibleTiles.Modules.GridMovement {
         }
 
         internal void PlayerWarped(object sender, WarpedEventArgs e) {
+            this.HandleFinishedWarping();
+        }
+
+        private void HandleFinishedWarping(bool failWarp = false) {
             Game1.player.canMove = true;
-            this.is_warping = false;
+            this.is_moving = false;
+            if (this.is_warping) {
+                this.is_warping = false;
+
+                if(failWarp) {
+                    this.Mod.Output("Failed to walk through entrance.");
+                } else {
+                    Game1.playSound("doorClose");
+                }
+                    
+            }
         }
 
         private void CenterPlayer() {

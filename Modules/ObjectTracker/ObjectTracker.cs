@@ -18,7 +18,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
         private TrackedObjects TrackedObjects;
 
-        private Dictionary<NPC, int> haltedNPCs = new();
+        //private Dictionary<NPC, int> haltedNPCs = new();
         private Vector2? LastTargetedTile = null;
 
         public string SelectedCategory;
@@ -28,6 +28,8 @@ namespace AccessibleTiles.Modules.ObjectTracker {
         //stop player from moving too fast
         int msBetweenCheckingPathfindingController = 1000;
         Timer checkPathingTimer = new Timer();
+
+        int pathfindingRetryAttempts = 0;
 
         //stop player from moving too fast
         Timer footstepTimer = new Timer();
@@ -50,16 +52,54 @@ namespace AccessibleTiles.Modules.ObjectTracker {
         }
 
         private void checkPathingTimer_Elapsed(object sender, ElapsedEventArgs e) {
-            if (Game1.player.controller != null && (Game1.activeClickableMenu == null || Game1.IsMultiplayer)) {
-                if (Game1.player.controller.timerSinceLastCheckPoint > 500) {
-                    Game1.player.controller.endBehaviorFunction(Game1.player, Game1.currentLocation);
 
-                    GetLocationObjects(reset_focus: false);
-                    this.Mod.Output("Pathfinding forcibly stopped. Took too long to reach checkpoint.", true);
+            Farmer player = Game1.player;
+            GameLocation location = Game1.currentLocation;
+
+            if (player.controller != null && (Game1.activeClickableMenu == null || Game1.IsMultiplayer)) {
+                if (player.controller.timerSinceLastCheckPoint > 500) {
+
+                    if (IsFocusValid() && pathfindingRetryAttempts < 5) {
+                        pathfindingRetryAttempts++;
+
+                        this.Mod.Output($"Attempting to restart pathfinding attempt {pathfindingRetryAttempts}");
+
+                        if(pathfindingRetryAttempts == 1) {
+                            //move around NPC?
+                            Dictionary<string, SpecialObject>? characters = TrackedObjects.GetObjects()["characters"];
+
+                            if(characters != null) {
+                                foreach (var kvp in characters) {
+
+                                    NPC character = kvp.Value.character;
+
+                                    if(character.getTileLocation() == player.getTileLocation() && !character.IsInvisible) {
+                                        character.IsInvisible = true;
+
+                                        //runs after x millseconds, according to function
+                                        Task ignore = SetCharacterVisible(character);
+                                    }
+                                }
+                            }
+
+                        }
+                        
+                    } else {
+                        pathfindingRetryAttempts = 0;
+                        player.controller.endBehaviorFunction(player, location);
+                        GetLocationObjects(reset_focus: true);
+
+                        this.Mod.Output("Pathfinding forcibly stopped. Target Lost.", true);
+                        player.controller = null;
+                    }
                 }
             }
         }
 
+        private async Task SetCharacterVisible(NPC npc) {
+            await Task.Delay(100);
+            npc.IsInvisible = false;
+        }
         public void HandleKeys(object sender, ButtonsChangedEventArgs e) {
 
             if (ModConfig.OTCycleUpCategory.JustPressed()) {
@@ -102,8 +142,9 @@ namespace AccessibleTiles.Modules.ObjectTracker {
         private void MoveToCurrentlySelectedObject() {
 
             this.Mod.Output($"Attempt pathfinding.", true);
+            pathfindingRetryAttempts = 0;
 
-            if(this.IsFocusValid()) {
+            if (this.IsFocusValid()) {
                 ReadCurrentlySelectedObject();
             }
 
@@ -122,25 +163,36 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
             if (closestTile != null) {
 
-                if(sObject.character != null) {
+                /*if(sObject.character != null) {
                     haltedNPCs.Add(sObject.character, sObject.character.speed);
                     sObject.character.speed = 0;
-                }
+                }*/
 
                 this.Mod.Output($"Moving to {closestTile.Value.X}-{closestTile.Value.Y}.", true);
-                LastTargetedTile = sObjectTile;
-                footstepTimer.Start();
-
-                checkPathingTimer.Start();
-                player.controller = new PathFindController(player, Game1.currentLocation, closestTile.Value.ToPoint(), -1, (Character farmer, GameLocation location) => {
-                    this.StopPathfinding();
-                });
+                StartPathfinding(player, Game1.currentLocation, closestTile.Value.ToPoint());
+                
 
             } else {
 
                 this.Mod.Output("Could not find path to object.", true);
 
             }
+
+        }
+
+        private void StartPathfinding(Farmer player, GameLocation location, Point targetTile, int direction = -1) {
+
+            LastTargetedTile = targetTile.ToVector2();
+
+            footstepTimer.Stop();
+            checkPathingTimer.Stop();
+            footstepTimer.Start();
+
+            checkPathingTimer.Start();
+
+            player.controller = new PathFindController(player, location, targetTile, direction, (Character farmer, GameLocation location) => {
+                this.StopPathfinding();
+            });
 
         }
 
@@ -154,7 +206,7 @@ namespace AccessibleTiles.Modules.ObjectTracker {
             player.controller = null;
             checkPathingTimer.Stop();
 
-            Task unhalt = UnhaltNPCS();
+            //Task unhalt = UnhaltNPCS();
 
             if(LastTargetedTile != null) {
                 string faceDirection = Utility.GetDirection(player.getTileLocation(), LastTargetedTile.Value);
@@ -174,13 +226,13 @@ namespace AccessibleTiles.Modules.ObjectTracker {
 
         }
 
-        private async Task UnhaltNPCS() {
+        /*private async Task UnhaltNPCS() {
             await Task.Delay(3000);
             foreach (var npcs in haltedNPCs) {
                 npcs.Key.speed = npcs.Value;
             }
             haltedNPCs.Clear();
-        }
+        }*/
 
         private void ReadCurrentlySelectedObject(bool readTileOnly = false) {
 
