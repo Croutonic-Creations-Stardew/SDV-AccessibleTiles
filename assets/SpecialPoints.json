@@ -63,6 +63,12 @@
       "yPos": 37
     },
     {
+      "name": "Arrowhead",
+      "category_override": "fishing",
+      "xPos": 58,
+      "yPos": 88
+    },
+    {
       "name": "sewage pipe",
       "category_override": "secrets", // Fishing level 15
       "xPos": 94,
@@ -142,7 +148,7 @@
       "yPos": 52
     },
     {
-      "name": "solid gold lewis",
+      "name": "gold statue",
       "category_override": "secrets", // Secret note 19
       "xPos": 57,
       "yPos": 81
@@ -154,7 +160,7 @@
       "yPos": 4
     },
     {
-      "name": "bridge over river",
+      "name": "river bridge",
       "category_override": "fishing",
       "xPos": 94,
       "yPos": 10
@@ -170,7 +176,7 @@
   ],
   "UndergroundMine60": [
     {
-      "name": "icy pool",
+      "name": "ice pool",
       "category_override": "fishing",
       "xPos": 27,
       "yPos": 13
