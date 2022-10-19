@@ -1,3 +1,7 @@
+# Developer Note
+
+I currently have too many different projects going on to focus on this. If anyone would like to take over development, please contact me.
+
 # SDV-AccessibleTiles
 
 Accessibility mod which seeks to make movement and tracking easier.
