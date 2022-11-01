@@ -1,9 +1,10 @@
 {
-  "ArchaeologyHouse": [
+  "AdventureGuild": [
     {
-      "name": "Box for Bone Fragments",
-      "xPos": 6,
-      "yPos": 9
+      "name": "Gil",
+      "category_override": "characters",
+      "xPos": 11,
+      "yPos": 12
     }
   ],
   "Beach": [
@@ -12,11 +13,6 @@
       "extraChecksHook": 2,
       "xPos": 53,
       "yPos": 8
-    },
-    {
-      "name": "Willy's Barrel",
-      "xPos": 37,
-      "yPos": 33
     },
     {
       "name": "west pier",
@@ -41,18 +37,16 @@
   ],
   "Desert": [
     {
+      "name": "buried doll",
+      "category_override": "secrets", // Secret note 18
+      "xPos": 40,
+      "yPos": 55
+    },
+    {
       "name": "pond",
       "category_override": "fishing",
       "xPos": 9,
       "yPos": 11
-    }
-  ],
-  "Farm": [
-    {
-      "name": "lumber pile",
-      "requiresQuest": 5,
-      "xPos": 60,
-      "yPos": 14
     }
   ],
   "Forest": [
@@ -69,25 +63,24 @@
       "yPos": 37
     },
     {
-      "name": "sewage pipe",
+      "name": "Arrowhead",
       "category_override": "fishing",
+      "xPos": 58,
+      "yPos": 88
+    },
+    {
+      "name": "sewage pipe",
+      "category_override": "secrets", // Fishing level 15
       "xPos": 94,
       "yPos": 103
     }
   ],
   "IslandSouth": [
     {
-      "name": "south coast",
+      "name": "southern coast",
       "category_override": "fishing",
       "xPos": 21,
       "yPos": 45
-    }
-  ],
-  "JoshHouse": [
-    {
-      "name": "Evelyn's Stove",
-      "xPos": 3,
-      "yPos": 16
     }
   ],
   "Mountain": [
@@ -100,55 +93,16 @@
   ],
   "Railroad": [
     {
-      "name": "Recycle Bin",
-      "xPos": 28,
-      "yPos": 36
+      "name": "buried treasure chest",
+      "category_override": "secrets", // Secret note 16
+      "xPos": 12,
+      "yPos": 38
     },
     {
-      "name": "Empty Crate",
-      "xPos": 45,
-      "yPos": 40
-    },
-    {
-      "name": "Witch's Cave",
-      "category_override": "entrance",
-      "xPos": 54,
-      "yPos": 35
-    }
-  ],
-  "Saloon": [
-    {
-      "name": "Gus's Fridge",
-      "xPos": 18,
-      "yPos": 16
-    }
-  ],
-  "SandyHouse": [
-    {
-      "name": "Shop Counter",
-      "category_override": "interactable",
-      "xPos": 2,
-      "yPos": 6
-    },
-    {
-      "name": "Casino",
-      "category_override": "entrance",
-      "xPos": 17,
-      "yPos": 1
-    }
-  ],
-  "ScienceHouse": [
-    {
-      "name": "Robin's Woodpile",
-      "xPos": 11,
-      "yPos": 19
-    }
-  ],
-  "SeedShop": [
-    {
-      "name": "Vegetable Bin",
-      "xPos": 19,
-      "yPos": 28
+      "name": "small pond",
+      "category_override": "secrets", // Secret note 25
+      "xPos": 15,
+      "yPos": 56
     }
   ],
   "Sewer": [
@@ -159,102 +113,71 @@
       "yPos": 29
     }
   ],
-  "SkullCave": [
-    {
-      "name": "Skull Cavern door",
-      "category_override": "door",
-      "xPos": 3,
-      "yPos": 3
-    }
-  ],
   "Submarine": [
     {
       "name": "deep ocean",
       "category_override": "fishing",
       "xPos": 8,
-      "yPos": 11
+      "yPos": 9
     }
   ],
   "Town": [
     {
-      "name": "Shadow Guy's Hiding Bush",
+      "name": "junimo bush",
+      "category_override": "secrets", // Secret note 13
+      "xPos": 20,
+      "yPos": 8
+    },
+    {
+      "name": "Shadow Guy's Bush",
       "category_override": "bush",
       "extraChecksHook": 1,
       "xPos": 28,
       "yPos": 13
     },
     {
-      "name": "bridge over river",
+      "name": "large bush",
+      "category_override": "secrets", // Secret note 21
+      "xPos": 48,
+      "yPos": 100
+    },
+    {
+      "name": "Joja truck",
+      "category_override": "secrets", // Secret note 20
+      "xPos": 105,
+      "yPos": 52
+    },
+    {
+      "name": "gold statue",
+      "category_override": "secrets", // Secret note 19
+      "xPos": 57,
+      "yPos": 81
+    },
+    {
+      "name": "buried doll",
+      "category_override": "secrets", // Secret note 17
+      "xPos": 98,
+      "yPos": 4
+    },
+    {
+      "name": "river bridge",
       "category_override": "fishing",
       "xPos": 94,
       "yPos": 10
-    },
-    {
-      "name": "Stardew Saloon",
-      "category_override": "trash cans",
-      "xPos": 47,
-      "yPos": 70
-    },
-    {
-      "name": "1 River Road",
-      "category_override": "trash cans",
-      "xPos": 52,
-      "yPos": 63
-    },
-    {
-      "name": "Mayor's Manor",
-      "category_override": "trash cans",
-      "xPos": 56,
-      "yPos": 86
-    },
-    {
-      "name": "1 Willow Lane",
-      "category_override": "trash cans",
-      "xPos": 13,
-      "yPos": 86
-    },
-    {
-      "name": "2 Willow Lane",
-      "category_override": "trash cans",
-      "xPos": 19,
-      "yPos": 89
-    },
-    {
-      "name": "Blacksmith",
-      "category_override": "trash cans",
-      "xPos": 97,
-      "yPos": 80
-    },
-    {
-      "name": "Museum",
-      "category_override": "trash cans",
-      "xPos": 108,
-      "yPos": 91
-    },
-    {
-      "name": "Joja Mart",
-      "category_override": "trash cans",
-      "xPos": 110,
-      "yPos": 56
-    }
-  ],
-  "Tunnel": [
-    {
-      "name": "Lock Box",
-      "xPos": 17,
-      "yPos": 6
     }
   ],
   "UndergroundMine20": [
     {
       "name": "dark pool",
+      "category_override": "fishing",
       "xPos": 27,
       "yPos": 13
     }
   ],
   "UndergroundMine60": [
     {
-      "name": "icy pool",
+      "name": "ice pool",
+      "category_override": "fishing",
       "xPos": 27,
       "yPos": 13
     }
@@ -269,30 +192,6 @@
   ],
   "WitchHut": [
     {
-      "name": "Dark Shrine of Memory",
-      "category_override": "shrine",
-      "xPos": 7,
-      "yPos": 5
-    },
-    {
-      "name": "Dark Shrine of Night Terrors",
-      "category_override": "shrine",
-      "xPos": 12,
-      "yPos": 6
-    },
-    {
-      "name": "Dark Shrine of Selfishness",
-      "category_override": "shrine",
-      "xPos": 2,
-      "yPos": 6
-    },
-    {
-      "name": "Teleportation Rune",
-      "category_override": "entrances",
-      "xPos": 11,
-      "yPos": 11
-    },
-    {
       "name": "Magic Ink",
       "requiresQuest": 28,
       "xPos": 4,
@@ -301,26 +200,16 @@
   ],
   "WitchSwamp": [
     {
-      "name": "Teleportation Rune",
-      "xPos": 20,
-      "yPos": 42
-    },
-    {
-      "name": "Witch's Hut",
-      "xPos": 20,
-      "yPos": 20
-    }
-  ],
-  "WitchWarpCave": [
-    {
-      "name": "Teleportation Rune",
-      "xPos": 4,
-      "yPos": 5
+      "name": "swamp river",
+      "category_override": "fishing",
+      "xPos": 24,
+      "yPos": 25
     }
   ],
   "Woods": [
     {
-      "name": "fishing spot",
+      "name": "pond",
+      "category_override": "fishing",
       "xPos": 12,
       "yPos": 26
     }
